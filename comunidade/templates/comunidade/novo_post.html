@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Novo Post - Engenheiras do Amanhã</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f1f2f6;
+    }
+    .logo-circle {
+      width: 50px;
+      height: 50px;
+      background-color: #4B0082;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    .nav-link.active {
+      font-weight: bold;
+      color: #4B0082 !important;
+    }
+    .form-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .btn-purple {
+      background-color: #4B0082;
+      color: white;
+      border-radius: 12px;
+    }
+    .btn-purple:hover {
+      background-color: #36005c;
+    }
+    .input-group-text {
+      background-color: transparent;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Cabeçalho -->
+<nav class="navbar navbar-expand-lg bg-white shadow-sm px-4">
+  <div class="container-fluid">
+    <div class="d-flex align-items-center">
+      <div class="logo-circle"></div>
+      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
+    </div>
+    <div class="d-flex align-items-center">
+      <ul class="navbar-nav me-4">
+        <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicial' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'novo_post' %}">Novo Post</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Ranking</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Perfil</a></li>
+      </ul>
+      <div class="logo-circle"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- Conteúdo -->
+<div class="container mt-5 mb-5">
+  <div class="text-center mb-4">
+    <h4 class="fw-bold text-purple">Crie sua publicação!</h4>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="form-container mx-auto" style="max-width: 600px;">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+      <label for="titulo" class="form-label fw-semibold">Título:</label>
+      <input type="text" class="form-control rounded-pill bg-light" id="titulo" name="titulo" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="conteudo" class="form-label fw-semibold">Conteúdo:</label>
+      <textarea class="form-control bg-light" id="conteudo" name="conteudo" rows="4" required></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="anexo" class="form-label fw-semibold">Anexar Conteúdo:</label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-paperclip"></i></span>
+        <input type="file" class="form-control" id="anexo" name="anexo">
+      </div>
+    </div>
+
+    <div class="text-end">
+      <button type="submit" class="btn btn-purple px-4">Publicar</button>
+    </div>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
