@@ -1,96 +1,171 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Comunidade - Engenheiras do Amanhã</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f1f2f6;
-        }
-        .logo-circle {
-            width: 50px;
-            height: 50px;
-            background-color: #4B0082;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 10px;
-        }
-        .nav-link.active {
-            font-weight: bold;
-            color: #4B0082 !important;
-        }
-        .post-card {
-            border-radius: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
-        }
-        .post-author-circle {
-            width: 30px;
-            height: 30px;
-            background-color: #4B0082;
-            border-radius: 50%;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Comunidade - Engenheiras do Amanhã</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background-color: #f1f2f6; }
+    .logo-circle { width: 50px; height: 50px; background-color: #4B0082; border-radius: 50%; margin-right: 10px; }
+    .nav-link.active { font-weight: bold; color: #4B0082 !important; }
+    .post-card { border-radius: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    .post-author-circle { width: 30px; height: 30px; background-color: #4B0082; border-radius: 50%; }
+  </style>
 </head>
 <body>
-    <!-- Cabeçalho -->
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4">
-        <div class="container-fluid">
-            <div class="d-flex align-items-center">
-                <div class="logo-circle"></div>
-                <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
-            </div>
-            <div class="d-flex align-items-center">
-                <ul class="navbar-nav me-4">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'novo_post' %}">Novo Post</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Ranking</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Perfil</a></li>
-                </ul>
-                <div class="logo-circle"></div>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Conteúdo -->
-    <div class="container mt-5">
-        <div class="text-center mb-4">
-            <h4 class="fw-bold text-purple">Bem-vindo à Comunidade de Extensão</h4>
-            <p>Compartilhe ideias, conecte-se com outros participantes e egressos, e ganhe pontos através do engajamento na comunidade.</p>
-        </div>
-
-<!-- Campo de pesquisa com formulário GET -->
-    <form method="get" action="{% url 'pagina_inicial' %}" class="d-flex justify-content-center mb-4">
-        <div class="input-group w-50">
-            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-            <input type="text" name="q" class="form-control rounded-end" placeholder="Pesquise posts do seu interesse" value="{{ request.GET.q }}">
-        </div>
-    </form>
-
-        <!-- Posts -->
-        {% for post in posts %}
-        <div class="bg-white p-4 mb-4 post-card d-flex justify-content-between align-items-start">
-            <div class="d-flex">
-                <div class="post-author-circle me-3"></div>
-                <div>
-                    <p class="card-text"><small class="text-muted">Postado por {{ post.autor.first_name }}</small></p>
-                    <h6 class="fw-bold">{{ post.titulo }}</h6>
-                    <p class="mb-2">{{ post.conteudo }}</p>
-        
-                    {% if post.imagem %}
-                        <img src="{{ post.imagem.url }}" alt="Imagem do post" class="img-fluid rounded mt-2" style="max-height: 300px; width: auto; object-fit: cover;">
-        
-                    {% endif %}
-                </div>
-            </div>
-            <small class="text-muted">{{ post.data_criacao }}</small>
-        </div>
-        {% empty %}
-            <p class="text-center text-muted">Nenhuma postagem ainda.</p>
-        {% endfor %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg bg-white shadow-sm px-4">
+  <div class="container-fluid">
+    <div class="d-flex align-items-center">
+      <div class="logo-circle"></div>
+      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
     </div>
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'novo_post' %}">Novo Post</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Ranking</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Perfil</a></li>
+    </ul>
+    <div class="logo-circle"></div>
+  </div>
+</nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container mt-5">
+  <div class="text-center mb-4">
+    <h4 class="fw-bold text-purple">Bem-vindo à Comunidade de Extensão</h4>
+    <p>Compartilhe ideias, conecte-se com outros participantes e ganhe pontos com seu engajamento.</p>
+  </div>
+
+  <!-- Campo de pesquisa -->
+  <form method="get" action="{% url 'pagina_inicial' %}" class="d-flex justify-content-center mb-4">
+    <div class="input-group w-50">
+      <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+      <input type="text" name="q" class="form-control rounded-end" placeholder="Pesquise posts do seu interesse" value="{{ request.GET.q }}">
+    </div>
+  </form>
+
+  {% for post in posts %}
+  <div id="post-{{ post.id }}" class="bg-white p-4 mb-4 post-card">
+    <div class="d-flex align-items-start">
+      <div class="post-author-circle me-3"></div>
+      <div class="flex-grow-1">
+        <p class="text-muted small">Postado por {{ post.autor.first_name }}</p>
+        <h6 class="fw-bold">{{ post.titulo }}</h6>
+        <p>{{ post.conteudo|linebreaksbr }}</p>
+
+        {% if post.imagem %}
+        <div class="text-center mt-3">
+          <img src="{{ post.imagem.url }}" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;">
+        </div>
+        {% endif %}
+
+        {% for word in post.conteudo.split %}
+          {% if "youtube.com/watch?v=" in word %}
+            {% with word|cut:"https://www.youtube.com/watch?v="|slice:":11" as video_id %}
+              <div class="d-flex justify-content-center mt-3">
+                <div class="ratio ratio-16x9" style="max-width: 480px;">
+                  <iframe src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
+                </div>
+              </div>
+            {% endwith %}
+          {% elif "youtu.be/" in word %}
+            {% with word|cut:"https://youtu.be/"|slice:":11" as video_id %}
+              <div class="d-flex justify-content-center mt-3">
+                <div class="ratio ratio-16x9" style="max-width: 530px;">
+                  <iframe src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
+                </div>
+              </div>
+            {% endwith %}
+          {% endif %}
+        {% endfor %}
+
+        <!-- Info -->
+        <div class="mt-3">
+          <small class="text-muted">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#curtidasModal{{ post.id }}">{{ post.curtidas.count }} curtida{{ post.curtidas.count|pluralize }}</a> ·
+            <a href="#" data-bs-toggle="modal" data-bs-target="#comentariosModal{{ post.id }}">{{ post.comentarios.count }} comentário{{ post.comentarios.count|pluralize }}</a>
+          </small>
+        </div>
+
+        <!-- Ações -->
+        <div class="d-flex align-items-center mt-3 gap-2 flex-wrap">
+          <!-- Curtir -->
+          <form method="post" action="{% url 'curtir_post' post.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger rounded-circle" style="width: 40px; height: 40px;">
+              <i class="bi bi-heart-fill"></i>
+            </button>
+          </form>
+
+          <!-- Comentar -->
+          <form method="post" action="{% url 'comentar_post' post.id %}" class="d-flex align-items-center w-100 gap-2">
+            {% csrf_token %}
+            <input type="text" name="comentario" class="form-control rounded-pill" placeholder="Comente...">
+            <button type="submit" class="btn text-white px-3" style="background-color: #4B0082; border-radius: 12px;">Enviar</button>
+            <a href="{{ request.build_absolute_uri }}#post-{{ post.id }}" class="btn text-white d-flex align-items-center gap-2 px-3" style="background-color: #28a745; border-radius: 12px;">
+              <i class="bi bi-share-fill"></i> Compartilhar
+            </a>
+          </form>
+        </div>
+
+        <!-- Modal Comentários -->
+        <div class="modal fade" id="comentariosModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Comentários</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </div>
+              <div class="modal-body">
+                {% for comentario in post.comentarios.all %}
+                <p><strong>{{ comentario.autor.first_name }}</strong>: {{ comentario.texto }}</p>
+                {% empty %}
+                <p class="text-muted">Nenhum comentário ainda.</p>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Curtidas -->
+        <div class="modal fade" id="curtidasModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Curtido por</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                {% for curtida in post.curtidas.all %}
+                <p>{{ curtida.usuario.first_name }}</p>
+                {% empty %}
+                <p class="text-muted">Ninguém curtiu ainda.</p>
+                {% endfor %}
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-end mt-2">
+          <small class="text-muted">{{ post.data_criacao }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+    <p class="text-center text-muted">Nenhuma postagem ainda.</p>
+  {% endfor %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
