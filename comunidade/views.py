@@ -1,49 +1,50 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.contrib import messages
-from .models import Post
 from django.utils import timezone
 from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
-# Página inicial com os posts (acesso apenas autenticado)
-@login_required(login_url='login')
+from .models import Post, Comentario, Curtida
+
+# Página inicial com listagem e busca de posts
+@login_required
 def pagina_inicial(request):
     query = request.GET.get('q')
     if query:
         posts = Post.objects.filter(
-            Q(titulo__icontains=query) |
-            Q(conteudo__icontains=query)
-        )
+            Q(titulo__icontains=query) | Q(conteudo__icontains=query)
+        ).order_by('-data_criacao')
     else:
         posts = Post.objects.all().order_by('-data_criacao')
+
     return render(request, 'comunidade/pagina_inicial.html', {'posts': posts})
 
 
-# View de login
+# Autenticação do usuário
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('username')
         senha = request.POST.get('password')
-
         user = authenticate(request, username=email, password=senha)
         if user:
             login(request, user)
             return redirect('pagina_inicial')
-        else:
-            return render(request, 'comunidade/login.html', {'erro': 'Credenciais inválidas'})
-    
+        return render(request, 'comunidade/login.html', {
+            'erro': 'Credenciais inválidas.'
+        })
     return render(request, 'comunidade/login.html')
 
 
-# View de logout
+# Logout do usuário
 def logout_view(request):
     logout(request)
     return redirect('login')
 
 
-# View de registro
+# Registro de novo usuário
 def registro_view(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
@@ -51,61 +52,79 @@ def registro_view(request):
         senha = request.POST.get('senha')
         telefone = request.POST.get('telefone')
 
-        # Verifica se o e-mail já está cadastrado
         if User.objects.filter(username=email).exists():
-            erro = 'Este e-mail já está em uso.'
-            return render(request, 'comunidade/register.html', {'erro': erro})
+            return render(request, 'comunidade/register.html', {
+                'erro': 'Este e-mail já está em uso.'
+            })
 
-        # Cria usuário
-        user = User.objects.create_user(username=email, email=email, password=senha, first_name=nome)
-        user.save()
-
+        User.objects.create_user(
+            username=email,
+            email=email,
+            password=senha,
+            first_name=nome
+        )
         return redirect('login')
 
     return render(request, 'comunidade/register.html')
 
 
-# View da solicitação de redefinição de senha
+# Solicitação de redefinição de senha (simulado)
 def solicitar_redefinicao_senha(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         print(f"[DEBUG] Requisição de redefinição de senha para: {email}")
-        return redirect('redefinir_senha')  # Simulação
-
+        return redirect('redefinir_senha')
     return render(request, 'comunidade/nova_senha.html')
 
 
-# View para redefinir a nova senha
+# Redefinir senha (simulado)
 def redefinir_senha(request):
     if request.method == 'POST':
         nova_senha = request.POST.get('new_password1')
         confirmar_senha = request.POST.get('new_password2')
-
         if nova_senha == confirmar_senha:
-            print("[DEBUG] Senha redefinida com sucesso!")
+            print("[DEBUG] Senha redefinida com sucesso!")  # Lógica real futura
             return redirect('login')
-        else:
-            return render(request, 'comunidade/recuperar_senha.html', {
-                'erro': 'As senhas não coincidem.'
-            })
-
+        return render(request, 'comunidade/recuperar_senha.html', {
+            'erro': 'As senhas não coincidem.'
+        })
     return render(request, 'comunidade/recuperar_senha.html')
 
+
+# Criar novo post
 @login_required
 def novo_post_view(request):
     if request.method == 'POST':
         titulo = request.POST.get('titulo')
         conteudo = request.POST.get('conteudo')
         imagem = request.FILES.get('anexo')
-        autor = request.user 
-
         Post.objects.create(
             titulo=titulo,
             conteudo=conteudo,
             imagem=imagem,
-            autor=autor,
+            autor=request.user,
             data_criacao=timezone.now()
         )
         return redirect('pagina_inicial')
-
     return render(request, 'comunidade/novo_post.html')
+
+
+# Comentar em um post
+@login_required
+def comentar_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.method == 'POST':
+        texto = request.POST.get('comentario')
+        if texto:
+            Comentario.objects.create(post=post, autor=request.user, texto=texto)
+    return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
+
+
+# Curtir ou descurtir um post
+@login_required
+def curtir_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    curtida, created = Curtida.objects.get_or_create(post=post, usuario=request.user)
+    if not created:
+        curtida.delete()  # Descurtir
+    return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
