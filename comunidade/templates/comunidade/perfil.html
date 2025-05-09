@@ -11,7 +11,6 @@
     .logo-circle { width: 50px; height: 50px; background-color: #4B0082; border-radius: 50%; margin-right: 10px; }
     .nav-link.active { font-weight: bold; color: #4B0082 !important; }
     .post-card { border-radius: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
-    .post-author-circle { width: 30px; height: 30px; background-color: #4B0082; border-radius: 50%; }
   </style>
 </head>
 <body>
@@ -27,51 +26,55 @@
       <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicial' %}">Home</a></li>
       <li class="nav-item"><a class="nav-link" href="{% url 'novo_post' %}">Novo Post</a></li>
       <li class="nav-item"><a class="nav-link" href="#">Ranking</a></li>
-      <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'perfil' %}active{% endif %}" href="{% url 'perfil' %}">Perfil</a></li>
-
+      <li class="nav-item"><a class="nav-link active" href="{% url 'perfil' %}">Perfil</a></li>
     </ul>
     <div class="logo-circle"></div>
   </div>
 </nav>
 
-<!-- Título e busca -->
 <div class="container mt-5">
   <div class="text-center mb-4">
     <h4 class="fw-bold text-purple">Seu Perfil</h4>
-    <p>Visualize seus dados e acompanhe seu progresso.</p>
+    <p>Visualize e atualize seus dados pessoais.</p>
   </div>
 
-  <form method="get" action="{% url 'pagina_inicial' %}" class="d-flex justify-content-center mb-4">
-    <div class="input-group w-50">
-      <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-      <input type="text" name="q" class="form-control rounded-end" placeholder="Pesquise posts do seu interesse">
-    </div>
-  </form>
-
-  <!-- Dados do Perfil -->
-  <div class="bg-white p-4 rounded shadow-sm mb-4">
+  <!-- Formulário de Atualização -->
+  <form method="post" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm mb-4">
+    {% csrf_token %}
     <div class="row align-items-center">
       <div class="col-md-3 text-center">
-        <img src="{{ perfil.foto.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Foto de perfil">
-        <form action="{% url 'atualizar_foto' %}" method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          <input type="file" name="foto" class="form-control form-control-sm">
-          <button class="btn btn-sm btn-primary mt-2">Atualizar Foto</button>
-        </form>
+        {% if perfil.foto %}
+          <img src="{{ perfil.foto.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Foto de perfil">
+        {% else %}
+          <div class="rounded-circle bg-secondary mb-3" style="width: 120px; height: 120px;"></div>
+        {% endif %}
+        <input type="file" name="foto" class="form-control form-control-sm">
       </div>
       <div class="col-md-9">
-        <h5 class="fw-bold">{{ user.get_full_name }}</h5>
-        <p class="mb-1"><strong>Email:</strong> {{ user.email }}</p>
-        <p class="mb-1"><strong>Telefone:</strong> {{ perfil.telefone }}</p>
-        <p class="mb-1"><strong>XP Acumulado:</strong> {{ perfil.pontos }}</p>
-        <div class="d-flex gap-4 mt-3">
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <label>Nome</label>
+            <input type="text" name="nome" class="form-control rounded-pill" value="{{ user.first_name }}">
+          </div>
+          <div class="col-md-6 mb-2">
+            <label>E-mail</label>
+            <input type="email" name="email" class="form-control rounded-pill" value="{{ user.email }}">
+          </div>
+          <div class="col-md-6 mb-2">
+            <label>Telefone</label>
+            <input type="text" name="telefone" class="form-control rounded-pill" value="{{ perfil.telefone }}">
+          </div>
+        </div>
+        <div class="mt-3 d-flex gap-4">
+          <div><strong>XP:</strong> {{ perfil.pontos }}</div>
           <div><strong>Posts:</strong> {{ posts_qtd }}</div>
           <div><strong>Curtidas:</strong> {{ curtidas_qtd }}</div>
           <div><strong>Comentários:</strong> {{ comentarios_qtd }}</div>
         </div>
+        <button type="submit" class="btn btn-primary mt-3 px-4">Salvar Alterações</button>
       </div>
     </div>
-  </div>
+  </form>
 
   <!-- Lista de Posts -->
   <h5 class="mb-3 fw-bold">Seus Posts</h5>
