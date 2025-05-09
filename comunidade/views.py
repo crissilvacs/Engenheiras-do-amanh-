@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import Post, Comentario, Curtida
+from .models import Post, Comentario, Curtida, Perfil
 
 # Página inicial com listagem e busca de posts
 @login_required
@@ -22,7 +22,6 @@ def pagina_inicial(request):
 
     return render(request, 'comunidade/pagina_inicial.html', {'posts': posts})
 
-
 # Autenticação do usuário
 def login_view(request):
     if request.method == 'POST':
@@ -32,17 +31,13 @@ def login_view(request):
         if user:
             login(request, user)
             return redirect('pagina_inicial')
-        return render(request, 'comunidade/login.html', {
-            'erro': 'Credenciais inválidas.'
-        })
+        return render(request, 'comunidade/login.html', {'erro': 'Credenciais inválidas.'})
     return render(request, 'comunidade/login.html')
-
 
 # Logout do usuário
 def logout_view(request):
     logout(request)
     return redirect('login')
-
 
 # Registro de novo usuário
 def registro_view(request):
@@ -57,16 +52,20 @@ def registro_view(request):
                 'erro': 'Este e-mail já está em uso.'
             })
 
-        User.objects.create_user(
+        user = User.objects.create_user(
             username=email,
             email=email,
             password=senha,
             first_name=nome
         )
+        user.save()
+
+        perfil = Perfil.objects.create(user=user, telefone=telefone)
+        perfil.save()
+
         return redirect('login')
 
     return render(request, 'comunidade/register.html')
-
 
 # Solicitação de redefinição de senha (simulado)
 def solicitar_redefinicao_senha(request):
@@ -76,20 +75,18 @@ def solicitar_redefinicao_senha(request):
         return redirect('redefinir_senha')
     return render(request, 'comunidade/nova_senha.html')
 
-
 # Redefinir senha (simulado)
 def redefinir_senha(request):
     if request.method == 'POST':
         nova_senha = request.POST.get('new_password1')
         confirmar_senha = request.POST.get('new_password2')
         if nova_senha == confirmar_senha:
-            print("[DEBUG] Senha redefinida com sucesso!")  # Lógica real futura
+            print("[DEBUG] Senha redefinida com sucesso!")
             return redirect('login')
         return render(request, 'comunidade/recuperar_senha.html', {
             'erro': 'As senhas não coincidem.'
         })
     return render(request, 'comunidade/recuperar_senha.html')
-
 
 # Criar novo post
 @login_required
@@ -108,7 +105,6 @@ def novo_post_view(request):
         return redirect('pagina_inicial')
     return render(request, 'comunidade/novo_post.html')
 
-
 # Comentar em um post
 @login_required
 def comentar_post(request, post_id):
@@ -119,25 +115,32 @@ def comentar_post(request, post_id):
             Comentario.objects.create(post=post, autor=request.user, texto=texto)
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
 
-
 # Curtir ou descurtir um post
 @login_required
 def curtir_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     curtida, created = Curtida.objects.get_or_create(post=post, usuario=request.user)
     if not created:
-        curtida.delete()  # Descurtir
+        curtida.delete()
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
 
-from .models import Perfil  # certifique-se de ter esse import
-
+# Perfil do usuário
 @login_required
 def perfil(request):
     user = request.user
-    try:
-        perfil = Perfil.objects.get(user=user)
-    except Perfil.DoesNotExist:
-        perfil = Perfil.objects.create(user=user)
+    perfil, _ = Perfil.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        user.first_name = request.POST.get('nome')
+        user.email = request.POST.get('email')
+        user.save()
+
+        perfil.telefone = request.POST.get('telefone')
+        if 'foto' in request.FILES:
+            perfil.foto = request.FILES['foto']
+        perfil.save()
+
+        return redirect('perfil')
 
     posts_qtd = Post.objects.filter(autor=user).count()
     curtidas_qtd = Curtida.objects.filter(usuario=user).count()
@@ -152,5 +155,4 @@ def perfil(request):
         'comentarios_qtd': comentarios_qtd,
         'posts': posts
     }
-
     return render(request, 'comunidade/perfil.html', context)

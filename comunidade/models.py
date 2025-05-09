@@ -26,3 +26,11 @@ class Curtida(models.Model):
     class Meta:
         unique_together = ('post', 'usuario')  # Evita múltiplas curtidas do mesmo usuário
 
+class Perfil(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    telefone = models.CharField(max_length=20, blank=True)
+    pontos = models.IntegerField(default=0)
+    foto = models.ImageField(upload_to='perfil/', blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
