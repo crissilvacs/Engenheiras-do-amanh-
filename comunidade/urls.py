@@ -10,4 +10,6 @@ urlpatterns = [
     path('novo-post/', views.novo_post_view, name='novo_post'),
     path('comentar/<int:post_id>/', views.comentar_post, name='comentar_post'),
     path('curtir/<int:post_id>/', views.curtir_post, name='curtir_post'),
+    path('perfil/', views.perfil, name='perfil'),  # <- ESSENCIAL
+    path('atualizar-foto/', views.atualizar_foto, name='atualizar_foto'),
 ]

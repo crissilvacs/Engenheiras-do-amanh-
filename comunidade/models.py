@@ -25,3 +25,4 @@ class Curtida(models.Model):
 
     class Meta:
         unique_together = ('post', 'usuario')  # Evita múltiplas curtidas do mesmo usuário
+
