@@ -128,3 +128,29 @@ def curtir_post(request, post_id):
     if not created:
         curtida.delete()  # Descurtir
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
+
+from .models import Perfil  # certifique-se de ter esse import
+
+@login_required
+def perfil(request):
+    user = request.user
+    try:
+        perfil = Perfil.objects.get(user=user)
+    except Perfil.DoesNotExist:
+        perfil = Perfil.objects.create(user=user)
+
+    posts_qtd = Post.objects.filter(autor=user).count()
+    curtidas_qtd = Curtida.objects.filter(usuario=user).count()
+    comentarios_qtd = Comentario.objects.filter(autor=user).count()
+    posts = Post.objects.filter(autor=user).order_by('-data_criacao')
+
+    context = {
+        'user': user,
+        'perfil': perfil,
+        'posts_qtd': posts_qtd,
+        'curtidas_qtd': curtidas_qtd,
+        'comentarios_qtd': comentarios_qtd,
+        'posts': posts
+    }
+
+    return render(request, 'comunidade/perfil.html', context)
