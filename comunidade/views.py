@@ -156,3 +156,32 @@ def perfil(request):
         'posts': posts
     }
     return render(request, 'comunidade/perfil.html', context)
+
+@login_required
+def editar_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, autor=request.user)
+
+    if request.method == 'POST':
+        post.titulo = request.POST.get('titulo')
+        post.conteudo = request.POST.get('conteudo')
+        if 'anexo' in request.FILES:
+            post.imagem = request.FILES['anexo']
+        post.save()
+        return redirect('perfil')
+
+    return render(request, 'comunidade/editar_post.html', {'post': post})
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Post
+
+@login_required
+def excluir_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, autor=request.user)
+
+    if request.method == 'POST':
+        post.delete()
+        return redirect('perfil')
+
+    return render(request, 'comunidade/excluir_post.html', {'post': post})
+
