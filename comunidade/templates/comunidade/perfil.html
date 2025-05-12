@@ -28,7 +28,12 @@
       <li class="nav-item"><a class="nav-link" href="#">Ranking</a></li>
       <li class="nav-item"><a class="nav-link active" href="{% url 'perfil' %}">Perfil</a></li>
     </ul>
-    <div class="logo-circle"></div>
+    {% if perfil.foto %}
+  <img src="{{ perfil.foto.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+{% else %}
+  <div class="logo-circle"></div>
+{% endif %}
+
   </div>
 </nav>
 

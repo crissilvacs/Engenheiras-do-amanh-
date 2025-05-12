@@ -6,21 +6,21 @@ from django.utils import timezone
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-
 from .models import Post, Comentario, Curtida, Perfil
 
 # Página inicial com listagem e busca de posts
 @login_required
 def pagina_inicial(request):
-    query = request.GET.get('q')
-    if query:
-        posts = Post.objects.filter(
-            Q(titulo__icontains=query) | Q(conteudo__icontains=query)
-        ).order_by('-data_criacao')
-    else:
-        posts = Post.objects.all().order_by('-data_criacao')
+    # busca os posts...
+    posts = Post.objects.all().order_by('-data_criacao')
 
-    return render(request, 'comunidade/pagina_inicial.html', {'posts': posts})
+    # busca o perfil do usuário logado
+    perfil = get_object_or_404(Perfil, user=request.user)
+
+    return render(request, 'comunidade/pagina_inicial.html', {
+        'posts': posts,
+        'perfil': perfil,
+    })
 
 # Autenticação do usuário
 def login_view(request):
@@ -91,19 +91,26 @@ def redefinir_senha(request):
 # Criar novo post
 @login_required
 def novo_post_view(request):
+    # Certifica-se de buscar o perfil do usuário logado
+    perfil = get_object_or_404(Perfil, user=request.user)
+
     if request.method == 'POST':
-        titulo = request.POST.get('titulo')
+        titulo   = request.POST.get('titulo')
         conteudo = request.POST.get('conteudo')
-        imagem = request.FILES.get('anexo')
+        imagem   = request.FILES.get('anexo')
         Post.objects.create(
-            titulo=titulo,
-            conteudo=conteudo,
-            imagem=imagem,
-            autor=request.user,
-            data_criacao=timezone.now()
+            titulo       = titulo,
+            conteudo     = conteudo,
+            imagem       = imagem,
+            autor        = request.user,
+            data_criacao = timezone.now()
         )
         return redirect('pagina_inicial')
-    return render(request, 'comunidade/novo_post.html')
+
+    # Passa o perfil ao template
+    return render(request, 'comunidade/novo_post.html', {
+        'perfil': perfil
+    })
 
 # Comentar em um post
 @login_required
