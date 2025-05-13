@@ -25,7 +25,7 @@
     <ul class="navbar-nav ms-auto">
       <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicial' %}">Home</a></li>
       <li class="nav-item"><a class="nav-link" href="{% url 'novo_post' %}">Novo Post</a></li>
-      <li class="nav-item"><a class="nav-link" href="#">Ranking</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'ranking' %}">Ranking</a></li>
       <li class="nav-item"><a class="nav-link active" href="{% url 'perfil' %}">Perfil</a></li>
     </ul>
     {% if perfil.foto %}

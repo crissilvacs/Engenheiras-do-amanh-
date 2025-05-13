@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import ranking_view
 
 urlpatterns = [
     path('', views.login_view, name='login'),
@@ -13,5 +14,6 @@ urlpatterns = [
     path('perfil/', views.perfil, name='perfil'),
     path('editar-post/<int:post_id>/', views.editar_post, name='editar_post'),
     path('excluir-post/<int:post_id>/', views.excluir_post, name='excluir_post'),
+    path('ranking/', ranking_view, name='ranking'),
 
 ]
