@@ -192,3 +192,14 @@ def excluir_post(request, post_id):
 
     return render(request, 'comunidade/excluir_post.html', {'post': post})
 
+def ranking_view(request):
+    perfis = Perfil.objects.select_related('user').order_by('-pontos')
+
+    podio = perfis[:3]
+    restantes = perfis[3:]
+
+    context = {
+        'podio': podio,
+        'restantes': restantes,
+    }
+    return render(request, 'comunidade/ranking.html', context)
