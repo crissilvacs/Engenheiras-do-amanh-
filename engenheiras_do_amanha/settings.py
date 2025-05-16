@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'comunidade',  # Adicione o aplicativo comunidade aqui
+    'taggit',
 ]
 
 MIDDLEWARE = [
