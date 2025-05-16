@@ -11,16 +11,24 @@ from .models import Post, Comentario, Curtida, Perfil
 # Página inicial com listagem e busca de posts
 @login_required
 def pagina_inicial(request):
-    # busca os posts...
-    posts = Post.objects.all().order_by('-data_criacao')
+    query = request.GET.get('q', '')
 
-    # busca o perfil do usuário logado
+    if query:
+        posts = Post.objects.filter(
+            Q(titulo__icontains=query) |
+            Q(conteudo__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct().order_by('-data_criacao')
+    else:
+        posts = Post.objects.all().order_by('-data_criacao')
+
     perfil = get_object_or_404(Perfil, user=request.user)
 
     return render(request, 'comunidade/pagina_inicial.html', {
         'posts': posts,
         'perfil': perfil,
     })
+
 
 # Autenticação do usuário
 def login_view(request):
@@ -91,26 +99,34 @@ def redefinir_senha(request):
 # Criar novo post
 @login_required
 def novo_post_view(request):
-    # Certifica-se de buscar o perfil do usuário logado
     perfil = get_object_or_404(Perfil, user=request.user)
 
     if request.method == 'POST':
         titulo   = request.POST.get('titulo')
         conteudo = request.POST.get('conteudo')
         imagem   = request.FILES.get('anexo')
-        Post.objects.create(
+        tags     = request.POST.get('tags')  # ← Captura as tags
+
+        # Cria o post
+        novo_post = Post.objects.create(
             titulo       = titulo,
             conteudo     = conteudo,
             imagem       = imagem,
             autor        = request.user,
             data_criacao = timezone.now()
         )
+
+        # Associa as tags se houverem
+        if tags:
+            # Divide a string por vírgula e remove espaços extras
+            novo_post.tags.add(*[t.strip() for t in tags.split(',')])
+
         return redirect('pagina_inicial')
 
-    # Passa o perfil ao template
     return render(request, 'comunidade/novo_post.html', {
         'perfil': perfil
     })
+
 
 # Comentar em um post
 @login_required

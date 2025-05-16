@@ -1,12 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from taggit.managers import TaggableManager
 
 class Post(models.Model):
     titulo = models.CharField(max_length=100)
     conteudo = models.TextField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     imagem = models.ImageField(upload_to='posts/', blank=True, null=True)
+    tags = TaggableManager()
     data_criacao = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
