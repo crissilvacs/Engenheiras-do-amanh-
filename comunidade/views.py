@@ -38,6 +38,9 @@ def login_view(request):
         user = authenticate(request, username=email, password=senha)
         if user:
             login(request, user)
+            perfil, _ = Perfil.objects.get_or_create(user=user)
+            perfil.pontos += 10
+            perfil.save()
             return redirect('pagina_inicial')
         return render(request, 'comunidade/login.html', {'erro': 'Credenciais inválidas.'})
     return render(request, 'comunidade/login.html')
@@ -121,6 +124,9 @@ def novo_post_view(request):
             # Divide a string por vírgula e remove espaços extras
             novo_post.tags.add(*[t.strip() for t in tags.split(',')])
 
+        perfil.pontos += 10
+        perfil.save()
+
         return redirect('pagina_inicial')
 
     return render(request, 'comunidade/novo_post.html', {
@@ -136,6 +142,9 @@ def comentar_post(request, post_id):
         texto = request.POST.get('comentario')
         if texto:
             Comentario.objects.create(post=post, autor=request.user, texto=texto)
+            perfil, _ = Perfil.objects.get_or_create(user=request.user)
+            perfil.pontos += 3 
+            perfil.save()
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
 
 # Curtir ou descurtir um post
@@ -143,9 +152,24 @@ def comentar_post(request, post_id):
 def curtir_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     curtida, created = Curtida.objects.get_or_create(post=post, usuario=request.user)
+    perfil, _ = Perfil.objects.get_or_create(user=request.user)
+
+    if created:
+        perfil.pontos += 5
+    
     if not created:
         curtida.delete()
+        perfil.pontos -= 5
+
+    perfil.save()
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
+
+@login_required
+def compartilhar_post(request, post_id):
+    perfil, _ = Perfil.objects.get_or_create(user=request.user)
+    perfil.pontos += 2 
+    perfil.save()
+    return redirect('pagina_inicial')
 
 # Perfil do usuário
 @login_required
