@@ -116,11 +116,15 @@
             {% csrf_token %}
             <input type="text" name="comentario" class="form-control rounded-pill" placeholder="Comente...">
             <button type="submit" class="btn text-white px-3" style="background-color: #4B0082; border-radius: 12px;">Enviar</button>
-            <button type="button"
-        class="btn btn-success share-btn d-flex align-items-center gap-2 px-3"
-        data-url="{{ request.build_absolute_uri }}#post-{{ post.id }}">
-  <i class="bi bi-share-fill"></i> Compartilhar
-</button>
+          </form>
+          <!-- Compartilhar -->
+          <form method="post" action="{% url 'compartilhar_post' post.id %}" class="d-inline share-form">
+            {% csrf_token %}
+            <button type="submit"
+                    class="btn btn-success d-flex align-items-center gap-2 px-3 share-btn"
+                    data-url="{{ request.build_absolute_uri }}#post-{{ post.id }}">
+              <i class="bi bi-share-fill"></i> Compartilhar
+            </button>
           </form>
         </div>
 
@@ -186,8 +190,10 @@
 
   <!-- Início do script de compartilhamento -->
   <script>
-    document.querySelectorAll('.share-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
+    document.querySelectorAll('.share-form').forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = form.querySelector('.share-btn');
         const url = btn.dataset.url;
         if (navigator.share) {
           try {
@@ -208,6 +214,7 @@
             alert('Não foi possível copiar o link automaticamente, copie manualmente: ' + url);
           }
         }
+        form.submit();
       });
     });
   </script>
