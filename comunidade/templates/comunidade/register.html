@@ -47,6 +47,10 @@
             border-radius: 20px;
             background-color: #f5f5f5;
         }
+
+        .captcha {
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -66,24 +70,35 @@
             <form method="post">
                 {% csrf_token %}
 
+                {% if erro %}
+                    <div class="alert alert-danger">{{ erro }}</div>
+                {% endif %}
+
+                {{ form.non_field_errors }}
+
                 <div class="mb-3">
-                    <label for="nome" class="form-label">Nome Completo:</label>
-                    <input type="text" name="nome" class="form-control" required>
+                    {{ form.nome.label_tag }}
+                    {{ form.nome }}
                 </div>
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">E-mail:</label>
-                    <input type="email" name="email" class="form-control" required>
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
                 </div>
 
                 <div class="mb-3">
-                    <label for="senha" class="form-label">Senha:</label>
-                    <input type="password" name="senha" class="form-control" required>
+                    {{ form.senha.label_tag }}
+                    {{ form.senha }}
                 </div>
 
                 <div class="mb-3">
-                    <label for="telefone" class="form-label">Telefone:</label>
-                    <input type="text" name="telefone" class="form-control" required>
+                    {{ form.telefone.label_tag }}
+                    {{ form.telefone }}
+                </div>
+
+                <div class="mb-3 captcha">
+                    {{ form.captcha.errors }}
+                    {{ form.captcha }}
                 </div>
 
                 <button type="submit" class="btn btn-purple w-100">Registre-se</button>

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'comunidade',  # Adicione o aplicativo comunidade aqui
     'taggit',
+    'captcha',
 ]
 
 MIDDLEWARE = [
