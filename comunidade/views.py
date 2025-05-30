@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .models import Post, Comentario, Curtida, Perfil
+from .forms import RegistroForm
 
 # Página inicial com listagem e busca de posts
 @login_required
@@ -53,30 +54,35 @@ def logout_view(request):
 # Registro de novo usuário
 def registro_view(request):
     if request.method == 'POST':
-        nome = request.POST.get('nome')
-        email = request.POST.get('email')
-        senha = request.POST.get('senha')
-        telefone = request.POST.get('telefone')
+        form = RegistroForm(request.POST)
+        if form.is_valid():
+            nome = form.cleaned_data['nome']
+            email = form.cleaned_data['email']
+            senha = form.cleaned_data['senha']
+            telefone = form.cleaned_data['telefone']
 
-        if User.objects.filter(username=email).exists():
-            return render(request, 'comunidade/register.html', {
-                'erro': 'Este e-mail já está em uso.'
-            })
+            if User.objects.filter(username=email).exists():
+                return render(request, 'comunidade/register.html', {
+                    'form': form,
+                    'erro': 'Este e-mail já está em uso.'
+                })
 
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=senha,
-            first_name=nome
-        )
-        user.save()
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=senha,
+                first_name=nome
+            )
+            user.save()
 
-        perfil = Perfil.objects.create(user=user, telefone=telefone)
-        perfil.save()
+            perfil = Perfil.objects.create(user=user, telefone=telefone)
+            perfil.save()
 
-        return redirect('login')
+            return redirect('login')
+    else:
+        form = RegistroForm()
 
-    return render(request, 'comunidade/register.html')
+    return render(request, 'comunidade/register.html', {'form': form})
 
 # Solicitação de redefinição de senha (simulado)
 def solicitar_redefinicao_senha(request):
