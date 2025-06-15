@@ -13,23 +13,29 @@ from .forms import RegistroForm
 @login_required
 def pagina_inicial(request):
     query = request.GET.get('q', '')
-
+    
+    # OTIMIZAÇÃO: Adicionar prefetch_related para tags
     if query:
         posts = Post.objects.filter(
             Q(titulo__icontains=query) |
             Q(conteudo__icontains=query) |
             Q(tags__name__icontains=query)
-        ).distinct().order_by('-data_criacao')
+        ).distinct().prefetch_related('tags').order_by('-data_criacao')
     else:
-        posts = Post.objects.all().order_by('-data_criacao')
-
+        posts = Post.objects.all().prefetch_related('tags').order_by('-data_criacao')
+    
     perfil = get_object_or_404(Perfil, user=request.user)
-
+    
     return render(request, 'comunidade/pagina_inicial.html', {
         'posts': posts,
         'perfil': perfil,
     })
 
+@login_required
+def visualizar_tags(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    tags = post.tags.all()
+    return render(request, 'comunidade/modal_tags.html', {'tags': tags})
 
 # Autenticação do usuário
 def login_view(request):
@@ -106,38 +112,26 @@ def redefinir_senha(request):
     return render(request, 'comunidade/recuperar_senha.html')
 
 # Criar novo post
+from .forms import PostForm
+
 @login_required
 def novo_post_view(request):
     perfil = get_object_or_404(Perfil, user=request.user)
 
     if request.method == 'POST':
-        titulo   = request.POST.get('titulo')
-        conteudo = request.POST.get('conteudo')
-        imagem   = request.FILES.get('anexo')
-        tags     = request.POST.get('tags')  # ← Captura as tags
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.autor = request.user
+            post.save()
+            form.save_m2m()  # ESSENCIAL para ManyToMany como as tags
+            perfil.pontos += 10
+            perfil.save()
+            return redirect('pagina_inicial')
+    else:
+        form = PostForm()
 
-        # Cria o post
-        novo_post = Post.objects.create(
-            titulo       = titulo,
-            conteudo     = conteudo,
-            imagem       = imagem,
-            autor        = request.user,
-            data_criacao = timezone.now()
-        )
-
-        # Associa as tags se houverem
-        if tags:
-            # Divide a string por vírgula e remove espaços extras
-            novo_post.tags.add(*[t.strip() for t in tags.split(',')])
-
-        perfil.pontos += 10
-        perfil.save()
-
-        return redirect('pagina_inicial')
-
-    return render(request, 'comunidade/novo_post.html', {
-        'perfil': perfil
-    })
+    return render(request, 'comunidade/novo_post.html', {'perfil': perfil, 'form': form})
 
 
 # Comentar em um post

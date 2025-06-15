@@ -111,6 +111,15 @@
             </button>
           </form>
 
+<!-- Botão Tags -->
+          <button type="button"
+                  class="btn btn-outline-secondary rounded-circle"
+                  style="width: 40px; height: 40px;"
+                  data-bs-toggle="modal"
+                  data-bs-target="#tagsModal{{ post.id }}">
+            <i class="bi bi-tag-fill"></i>
+          </button>
+
           <!-- Comentar -->
           <form method="post" action="{% url 'comentar_post' post.id %}" class="d-flex align-items-center w-100 gap-2">
             {% csrf_token %}
@@ -171,6 +180,36 @@
             </div>
           </div>
         </div>
+
+                
+        <!-- Modal Tags -->
+        <div class="modal fade" id="tagsModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Tags deste Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </div>
+              <div class="modal-body">
+                {% if post.tags.all|length %}
+
+                  <div class="d-flex flex-wrap gap-2">
+                    {% for tag in post.tags.all %}
+                      <span class="badge bg-secondary">{{ tag.nome }}</span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <p class="text-muted">Este post não tem tags.</p>
+                {% endif %}
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
 
         <div class="text-end mt-2">
           <small class="text-muted">{{ post.data_criacao }}</small>
