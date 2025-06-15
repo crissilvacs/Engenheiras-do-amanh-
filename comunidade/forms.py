@@ -9,3 +9,14 @@ class RegistroForm(forms.Form):
     senha = forms.CharField(label="Senha", widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     telefone = forms.CharField(label="Telefone", max_length=20, widget=forms.TextInput(attrs={'class': 'form-control'}))
     captcha = CaptchaField()
+
+from .models import Post
+from taggit.forms import TagWidget
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ['titulo', 'conteudo', 'imagem', 'tags']  # Inclua as tags
+        widgets = {
+            'tags': TagWidget(attrs={'class': 'form-control', 'placeholder': 'Separe as tags por vírgulas'}),
+        }
