@@ -12,6 +12,28 @@
     .nav-link.active { font-weight: bold; color: #4B0082 !important; }
     .post-card { border-radius: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
     .post-author-circle { width: 30px; height: 30px; background-color: #4B0082; border-radius: 50%; }
+
+    .btn-purple {
+      background-color: #4B0082; /* Cor roxa */
+      border: none;
+      color: white  ;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-purple:hover {
+      background-color: #883dce; /* Tom de roxo mais claro no hover */
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-purple:active {
+      transform: translateY(0);
+    }
+
+    .btn-purple i {
+      font-size: 1.5rem;
+    }
+
   </style>
 </head>
 <body>
@@ -24,13 +46,19 @@
       <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
     </div>
     <ul class="navbar-nav ms-auto">
+      <!-- Botão de logout -->
+      <li class="nav-item">
+        <form method="post" action="{% url 'logout' %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Sair</button>
+        </form>
+      </li>
       <li class="nav-item"><a class="nav-link active" href="{% url 'pagina_inicial' %}">Home</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'novo_post' %}">Novo Post</a></li>
       <li class="nav-item"><a class="nav-link" href="{% url 'ranking' %}">Ranking</a></li>
       <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>
     </ul>
     {% if perfil.foto %}
-  <img src="{{ perfil.foto.url }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+  <img src="{{ perfil.foto.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
 {% else %}
   <div class="logo-circle"></div>
 {% endif %}
@@ -44,6 +72,7 @@
     <p>Compartilhe ideias, conecte-se com outros participantes e ganhe pontos com seu engajamento.</p>
   </div>
 
+
   <!-- Campo de pesquisa -->
   <form method="get" action="{% url 'pagina_inicial' %}" class="d-flex justify-content-center mb-4">
     <div class="input-group w-50">
@@ -51,6 +80,13 @@
       <input type="text" name="q" class="form-control rounded-end" placeholder="Pesquise posts do seu interesse" value="{{ request.GET.q }}">
     </div>
   </form>
+  <div class="d-flex justify-content-center mb-4">
+    <a href="{% url 'novo_post' %}" class="btn btn-purple btn-lg shadow-lg rounded-pill py-3 px-5 d-flex align-items-center gap-3">
+      <i class="bi bi-plus-circle"></i> Criar Novo Post
+    </a>
+  </div>
+
+
 
   {% for post in posts %}
   <div id="post-{{ post.id }}" class="bg-white p-4 mb-4 post-card">

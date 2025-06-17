@@ -107,8 +107,14 @@
       <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
     </div>
     <ul class="navbar-nav ms-auto d-flex align-items-center">
+      <!-- Botão de logout -->
+      <li class="nav-item">
+        <form method="post" action="{% url 'logout' %}" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Sair</button>
+        </form>
+      </li>
       <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicial' %}">Home</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'novo_post' %}">Novo Post</a></li>
       <li class="nav-item"><a class="nav-link active" href="{% url 'ranking' %}">Ranking</a></li>
       <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>
 

@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .models import Post, Comentario, Curtida, Perfil
 from .forms import RegistroForm
-
+from .forms import PerfilForm
 # Página inicial com listagem e busca de posts
 @login_required
 def pagina_inicial(request):
@@ -243,3 +243,31 @@ def ranking_view(request):
         'restantes': restantes,
     }
     return render(request, 'comunidade/ranking.html', context)
+
+@login_required
+def editar_perfil(request):
+    perfil = get_object_or_404(Perfil, user=request.user)
+
+    if request.method == 'POST':
+        user = request.user
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        telefone = request.POST.get('telefone')
+        foto = request.FILES.get('foto')
+
+        if nome:
+            user.first_name = nome
+        if email:
+            user.email = email
+        user.save()
+
+        perfil.telefone = telefone
+        if foto:
+            perfil.foto = foto
+        perfil.save()
+
+        return redirect('perfil')
+
+    return render(request, 'comunidade/editar_perfil.html', {'perfil': perfil})
+
+

@@ -20,3 +20,14 @@ class PostForm(forms.ModelForm):
         widgets = {
             'tags': TagWidget(attrs={'class': 'form-control', 'placeholder': 'Separe as tags por vírgulas'}),
         }
+from django import forms
+from .models import Perfil
+
+class PerfilForm(forms.ModelForm):
+    class Meta:
+        model = Perfil
+        fields = ['foto', 'telefone']  # Coloque aqui os campos que o usuário poderá editar
+        widgets = {
+            'telefone': forms.TextInput(attrs={'class': 'form-control'}),
+            'foto': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
