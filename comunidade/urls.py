@@ -15,5 +15,6 @@ urlpatterns = [
     path('editar-post/<int:post_id>/', views.editar_post, name='editar_post'),
     path('excluir-post/<int:post_id>/', views.excluir_post, name='excluir_post'),
     path('ranking/', ranking_view, name='ranking'),
-    path('compartilhar/<int:post_id>/', views.compartilhar_post, name='compartilhar_post')
+    path('compartilhar/<int:post_id>/', views.compartilhar_post, name='compartilhar_post'),
+    path('perfil/editar/', views.editar_perfil, name='editar_perfil')  
 ]
