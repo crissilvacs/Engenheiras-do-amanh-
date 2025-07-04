@@ -7,14 +7,13 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .models import Post, Comentario, Curtida, Perfil
-from .forms import RegistroForm
-from .forms import PerfilForm
+from .forms import RegistroForm, LoginForm, PerfilForm, PostForm
 # Página inicial com listagem e busca de posts
+
 @login_required
 def pagina_inicial(request):
     query = request.GET.get('q', '')
     
-    # OTIMIZAÇÃO: Adicionar prefetch_related para tags
     if query:
         posts = Post.objects.filter(
             Q(titulo__icontains=query) |
@@ -24,7 +23,11 @@ def pagina_inicial(request):
     else:
         posts = Post.objects.all().prefetch_related('tags').order_by('-data_criacao')
     
-    perfil = get_object_or_404(Perfil, user=request.user)
+    # --- CORREÇÃO AQUI ---
+    # Substituímos get_object_or_404 por get_or_create.
+    # Isso tenta buscar o perfil. Se não encontrar, cria um novo automaticamente,
+    # evitando o erro 404.
+    perfil, created = Perfil.objects.get_or_create(user=request.user)
     
     return render(request, 'comunidade/pagina_inicial.html', {
         'posts': posts,
@@ -39,18 +42,39 @@ def visualizar_tags(request, post_id):
 
 # Autenticação do usuário
 def login_view(request):
+    # Se o usuário já estiver logado, redireciona para a página inicial
+    if request.user.is_authenticated:
+        return redirect('pagina_inicial')
+
+    erro = None
     if request.method == 'POST':
-        email = request.POST.get('username')
-        senha = request.POST.get('password')
-        user = authenticate(request, username=email, password=senha)
-        if user:
-            login(request, user)
-            perfil, _ = Perfil.objects.get_or_create(user=user)
-            perfil.pontos += 10
-            perfil.save()
-            return redirect('pagina_inicial')
-        return render(request, 'comunidade/login.html', {'erro': 'Credenciais inválidas.'})
-    return render(request, 'comunidade/login.html')
+        # Usa o novo LoginForm para validar os dados do POST
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            # Se o formulário for válido (incluindo o captcha), prossiga
+            email = form.cleaned_data['username']
+            senha = form.cleaned_data['password']
+            
+            user = authenticate(request, username=email, password=senha)
+            
+            if user:
+                login(request, user)
+                perfil, _ = Perfil.objects.get_or_create(user=user)
+                # Adicionar pontos por login, se desejar
+                # perfil.pontos += 10 
+                # perfil.save()
+                return redirect('pagina_inicial')
+            else:
+                # Se a autenticação falhar, define uma mensagem de erro geral
+                erro = 'Credenciais inválidas. Por favor, tente novamente.'
+        # Se o form não for válido, ele será renderizado novamente na página
+        # com as mensagens de erro automáticas (ex: captcha incorreto).
+    else:
+        # Se for um GET, apenas cria um formulário em branco
+        form = LoginForm()
+
+    # Passa o formulário e a mensagem de erro para o template
+    return render(request, 'comunidade/login.html', {'form': form, 'erro': erro})
 
 # Logout do usuário
 def logout_view(request):
@@ -173,7 +197,7 @@ def compartilhar_post(request, post_id):
 
 # Perfil do usuário
 @login_required
-def perfil(request):
+def perfil_view(request):
     user = request.user
     perfil, _ = Perfil.objects.get_or_create(user=user)
 

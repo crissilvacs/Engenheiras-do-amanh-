@@ -5,10 +5,12 @@
   <meta charset="UTF-8">
   <title>Ranking - Engenheiras do Amanhã</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <style>
     body {
       background-color: #f1f2f6;
       font-family: 'Segoe UI', sans-serif;
+      padding-top: 70px; 
     }
     .logo-circle {
       width: 50px;
@@ -57,6 +59,7 @@
       border-radius: 50%;
       object-fit: cover;
       margin-left: 10px;
+      cursor: pointer;
     }
     .fallback-foto {
       width: 40px;
@@ -100,33 +103,28 @@
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg bg-white shadow-sm px-4">
+<nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
   <div class="container-fluid">
     <div class="d-flex align-items-center">
       <div class="logo-circle"></div>
       <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
     </div>
     <ul class="navbar-nav ms-auto d-flex align-items-center">
-      <!-- Botão de logout -->
       <li class="nav-item">
         <form method="post" action="{% url 'logout' %}" class="d-inline">
           {% csrf_token %}
-          <button type="submit" class="btn btn-danger">Sair</button>
         </form>
       </li>
       <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicial' %}">Home</a></li>
       <li class="nav-item"><a class="nav-link active" href="{% url 'ranking' %}">Ranking</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Perfil</a></li>
-
-      <!-- Foto de perfil no topo -->
-      <li class="nav-item">
-        {% if request.user.perfil.foto %}
-          <img src="{{ request.user.perfil.foto.url }}" alt="Foto do usuário" class="avatar-topo">
-        {% else %}
-          <div class="avatar-topo" style="background-color:#4B0082;"></div>
-        {% endif %}
-      </li>
     </ul>
+
+    <!-- Foto de perfil (TOP) com abertura da sidebar -->
+    {% if request.user.perfil.foto %}
+      <img src="{{ request.user.perfil.foto.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil">
+    {% else %}
+      <div class="logo-circle" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil" style="cursor: pointer;"></div>
+    {% endif %}
   </div>
 </nav>
 
@@ -173,6 +171,39 @@
         {% endfor %}
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Sidebar Perfil Estilizada -->
+<div class="offcanvas offcanvas-end offcanvas-custom" tabindex="-1" id="sidebarPerfil" aria-labelledby="sidebarPerfilLabel" style="width: 280px;">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title" id="sidebarPerfilLabel">Minha Conta</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column gap-3 px-3">
+    <div class="text-center mt-3 mb-4">
+      {% if request.user.perfil.foto %}
+        <img src="{{ request.user.perfil.foto.url }}" class="rounded-circle shadow" style="width: 80px; height: 80px; object-fit: cover;">
+      {% else %}
+        <div class="logo-circle mx-auto"></div>
+      {% endif %}
+      <p class="mt-2 fw-semibold">{{ user.first_name }}</p>
+    </div>
+
+    <a href="{% url 'perfil' %}" class="btn btn-outline-purple d-flex align-items-center gap-2 w-100">
+      <i class="bi bi-person-circle"></i> Perfil
+    </a>
+
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-purple d-flex align-items-center gap-2 w-100">
+        <i class="bi bi-box-arrow-right"></i> Sair
+      </button>
+    </form>
+
+    <div class="mt-auto text-center small">
+      Engenheiras do Amanhã &copy; {{ now|date:"Y" }}
+    </div>
   </div>
 </div>
 
