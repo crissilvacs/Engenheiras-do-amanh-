@@ -147,6 +147,18 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+ACCOUNT_LOGOUT_ON_GET = True
+# Redireciona para a página de login após o logout
+ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'
+
+# Pula a página de confirmação "Sign in via Google"
+SOCIALACCOUNT_LOGIN_ON_GET = True
+# Desativa o cadastro automático na tela de login
+SOCIALACCOUNT_AUTO_SIGNUP = False
+# Define nosso adaptador personalizado para controlar o fluxo
+SOCIALACCOUNT_ADAPTER = 'comunidade.adapters.CustomSocialAccountAdapter'
+
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [

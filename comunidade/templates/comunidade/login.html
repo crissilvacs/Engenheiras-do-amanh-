@@ -47,7 +47,6 @@
         .btn-purple:hover {
             background-color: #36005c;
         }
-        /* Estilo para o botão do Google */
         .btn-google {
             background-color: #DB4437;
             color: white;
@@ -86,7 +85,6 @@
             width: 150px;
             text-align: center;
         }
-        /* O divisor não é mais necessário aqui, mas mantenho o estilo caso precise */
         .divider {
             display: flex;
             align-items: center;
@@ -131,6 +129,18 @@
     <div class="container d-flex justify-content-center">
         <div class="form-container">
             <p class="text-center fw-semibold">Para continuar, faça login ou registre-se.</p>
+            
+            <!-- CORREÇÃO FINAL AQUI -->
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level == 40 or 'error' in message.tags %}
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
 
             {% if erro %}
                 <div class="alert alert-danger">{{ erro }}</div>
@@ -167,7 +177,6 @@
                     Esqueceu sua senha? <a href="#">Clique aqui</a>
                 </div>
                 
-                <!-- Estrutura de botões restaurada -->
                 <div class="d-grid gap-2 mb-3">
                     <a href="{% provider_login_url 'google' process='login' %}" class="btn btn-google">
                         <i class="fab fa-google me-2"></i> Entrar com Google
