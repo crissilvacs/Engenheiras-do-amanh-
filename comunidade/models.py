@@ -33,7 +33,10 @@ class Perfil(models.Model):
     telefone = models.CharField(max_length=20, blank=True)
     pontos = models.IntegerField(default=0)
     foto = models.ImageField(upload_to='perfil/', blank=True, null=True)
+    
+    # --- NOVO CAMPO AQUI ---
+    # Armazena a data da última interação para controlar o bônus diário.
+    ultima_interacao = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.user.username
-

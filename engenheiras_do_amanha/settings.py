@@ -154,7 +154,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'
 # Pula a página de confirmação "Sign in via Google"
 SOCIALACCOUNT_LOGIN_ON_GET = True
 # Desativa o cadastro automático na tela de login
-SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_AUTO_SIGNUP = True
 # Define nosso adaptador personalizado para controlar o fluxo
 SOCIALACCOUNT_ADAPTER = 'comunidade.adapters.CustomSocialAccountAdapter'
 

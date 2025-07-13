@@ -9,10 +9,10 @@
 
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Font Awesome para o ícone do Google -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <!-- Bootstrap Icons para o ícone de refresh -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
         body {
@@ -55,8 +55,19 @@
             border-radius: 20px;
             background-color: #f5f5f5;
         }
-        .captcha {
+        .captcha-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
             margin-top: 15px;
+        }
+        .captcha-wrapper img {
+            border-radius: 5px;
+        }
+        .captcha-wrapper input[type="text"] {
+            width: 150px;
+            text-align: center;
         }
         .divider {
             display: flex;
@@ -76,6 +87,19 @@
         }
         .divider:not(:empty)::after {
             margin-left: .25em;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .login-link a {
+            color: #4B0082;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -124,24 +148,61 @@
                     {{ form.telefone.label_tag }}
                     {{ form.telefone }}
                 </div>
-                <div class="mb-3 captcha">
-                    {{ form.captcha.errors }}
+                
+                <div class="captcha-wrapper">
                     {{ form.captcha }}
+                    <button type="button" id="refresh-captcha-register" class="btn btn-light border" title="Atualizar Captcha">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
                 </div>
 
-                <button type="submit" class="btn btn-purple w-100">Registre-se</button>
+                <div class="d-grid gap-2 mt-3">
+                    <button type="submit" class="btn btn-purple w-100">Registre-se</button>
+                </div>
             </form>
             
-            <!-- Divisor e botão do Google -->
             <div class="divider">OU</div>
 
-            <!-- CORREÇÃO AQUI: Adicionado process='signup' -->
-            <a href="{% provider_login_url 'google' process='signup' %}" class="btn btn-google w-100">
-                <i class="fab fa-google me-2"></i> Registrar-se com Google
-            </a>
+            <!-- Botão de Registro com Google -->
+            <div class="d-grid gap-2">
+                <a href="{% provider_login_url 'google' process='signup' %}" class="btn btn-google w-100">
+                    <i class="fab fa-google me-2"></i> Registrar-se com Google
+                </a>
+            </div>
+
+            <!-- Link para a página de login -->
+            <div class="login-link">
+                Já tem uma conta? <a href="{% url 'login' %}">Faça o login</a>
+            </div>
 
         </div>
     </main>
+
+    <script>
+    // Script para atualizar o captcha
+    document.addEventListener('DOMContentLoaded', function() {
+        const refreshButton = document.getElementById('refresh-captcha-register');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', function() {
+                const captchaImage = document.querySelector('.captcha');
+                const captchaHiddenInput = document.querySelector('input[name="captcha_0"]');
+                
+                fetch('/captcha/refresh/', {
+                    method: 'GET',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (captchaImage && captchaHiddenInput && data.key) {
+                        captchaImage.src = data.image_url;
+                        captchaHiddenInput.value = data.key;
+                    }
+                })
+                .catch(error => console.error('Erro ao atualizar o captcha:', error));
+            });
+        }
+    });
+    </script>
 
 </body>
 </html>
