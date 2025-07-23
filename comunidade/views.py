@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .models import Post, Comentario, Curtida, Perfil, User
 from .forms import RegistroForm, LoginForm, PerfilForm, PostForm
+from django.contrib import messages
 
 # --- PONTUAÇÃO CENTRALIZADA ---
 PONTOS_NOVO_POST = 15
@@ -145,9 +146,19 @@ def registro_view(request):
             telefone = form.cleaned_data['telefone']
             if User.objects.filter(username=email).exists():
                 return render(request, 'comunidade/register.html', {'form': form, 'erro': 'Este e-mail já está em uso.'})
-            user = User.objects.create_user(username=email, email=email, password=senha, first_name=nome)
-            Perfil.objects.create(user=user, telefone=telefone)
-            return redirect('login')
+            
+            try:
+                user = User.objects.create_user(username=email, email=email, password=senha, first_name=nome)
+                Perfil.objects.create(user=user, telefone=telefone)
+                messages.success(request, 'Cadastro realizado com sucesso! Faça login para continuar.')
+                form = RegistroForm()
+                return render(request, 'comunidade/register.html', {'form': form})
+            except Exception as e:
+                    messages.error(request, f'Ocorreu um erro inesperado ao cadastrar: {e}')
+                    return render(request, 'comunidade/register.html', {'form': form})
+        else:
+            messages.error(request, 'Por favor, corrija os erros no formulário.')
+            return render(request, 'comunidade/register.html', {'form': form})
     else:
         form = RegistroForm()
     return render(request, 'comunidade/register.html', {'form': form})
