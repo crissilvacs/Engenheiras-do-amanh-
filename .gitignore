@@ -1,3 +1,5 @@
 comunidade/__pycache__
 amb_eng/
 .env
+*.sqlite3                  
+media/            
