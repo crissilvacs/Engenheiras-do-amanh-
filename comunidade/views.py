@@ -8,6 +8,10 @@ from django.urls import reverse
 from .models import Post, Comentario, Curtida, Perfil, User
 from .forms import RegistroForm, LoginForm, PerfilForm, PostForm
 from django.contrib import messages
+from metrics.models import UserAction
+from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import Paginator
+from django.urls import reverse
 
 # --- PONTUAÇÃO CENTRALIZADA ---
 PONTOS_NOVO_POST = 15
@@ -58,12 +62,17 @@ def pagina_inicial(request):
             Q(tags__name__icontains=query)
         ).distinct().prefetch_related('tags').order_by('-data_criacao')
     else:
-        posts = Post.objects.all().prefetch_related('tags').order_by('-data_criacao')
+        posts_list = Post.objects.all().prefetch_related('tags').order_by('-data_criacao')
     
     perfil, created = Perfil.objects.get_or_create(user=request.user)
     
+    # --- Lógica de Paginação ---
+    paginator = Paginator(posts_list, 10) # 10 posts por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'comunidade/pagina_inicial.html', {
-        'posts': posts,
+        'posts': page_obj,
         'perfil': perfil,
     })
 
@@ -77,6 +86,7 @@ def novo_post_view(request):
             post.save()
             form.save_m2m()
             gerenciar_pontos(request.user, 'post')
+            UserAction.objects.create(user=request.user, action_type='POST_CRIADO', content_object=post)
             return redirect('pagina_inicial')
     else:
         form = PostForm()
@@ -93,6 +103,7 @@ def comentar_post(request, post_id):
             if not Comentario.objects.filter(post=post, autor=request.user).exists():
                 gerenciar_pontos(request.user, 'comentario')
             Comentario.objects.create(post=post, autor=request.user, texto=texto)
+            UserAction.objects.create(user=request.user, action_type='COMENTARIO_CRIADO', content_object=Comentario)    
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
 
 @login_required
@@ -105,6 +116,7 @@ def curtir_post(request, post_id):
         curtidas_hoje = Curtida.objects.filter(usuario=request.user, data__date=timezone.now().date()).count()
         if curtidas_hoje <= LIMITE_CURTIDAS_DIARIAS:
             gerenciar_pontos(request.user, 'curtida')
+            UserAction.objects.create(user=request.user, action_type='CURTIDA_CRIADA', content_object=curtida)
     else:
         curtida.delete()
         
@@ -113,6 +125,8 @@ def curtir_post(request, post_id):
 @login_required
 def compartilhar_post(request, post_id):
     gerenciar_pontos(request.user, 'compartilhamento')
+    post = get_object_or_404(Post, id=post_id)
+    UserAction.objects.create(user=request.user, action_type='COMPARTILHAMENTO', content_object=post)    
     return redirect('pagina_inicial')
 
 # --- VIEWS DE AUTENTICAÇÃO E PERFIL ---
@@ -150,9 +164,7 @@ def registro_view(request):
             try:
                 user = User.objects.create_user(username=email, email=email, password=senha, first_name=nome)
                 Perfil.objects.create(user=user, telefone=telefone)
-                messages.success(request, 'Cadastro realizado com sucesso! Faça login para continuar.')
-                form = RegistroForm()
-                return render(request, 'comunidade/register.html', {'form': form})
+                return render(request, 'comunidade/register.html', {'show_success_modal': True})
             except Exception as e:
                     messages.error(request, f'Ocorreu um erro inesperado ao cadastrar: {e}')
                     return render(request, 'comunidade/register.html', {'form': form})

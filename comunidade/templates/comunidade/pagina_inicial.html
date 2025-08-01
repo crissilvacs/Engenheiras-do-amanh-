@@ -45,12 +45,24 @@
       display: none;
     }
 
+    .pagination .page-item .page-link {
+        color: #4B0082;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #4B0082;
+        border-color: #4B0082;
+        color: white;
+    }
+    .pagination .page-item:not(.active) .page-link:hover {
+        background-color: #883dce; /* Tom de roxo mais claro no hover */
+        color: white;
+    }
+
 
   </style>
 </head>
 <body>
 
-<!-- Navbar -->
 <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
   <div class="container-fluid">
     <div class="d-flex align-items-center">
@@ -58,10 +70,10 @@
       <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
     </div>
     <ul class="navbar-nav ms-auto">
-      <!-- Botão de logout -->
       <li class="nav-item">
         <form method="post" action="{% url 'logout' %}" class="d-inline">
           {% csrf_token %}
+
         </form>
       </li>
       <li class="nav-item"><a class="nav-link active" href="{% url 'pagina_inicial' %}">Home</a></li>
@@ -83,7 +95,6 @@
   </div>
 
 
-  <!-- Campo de pesquisa -->
   <form method="get" action="{% url 'pagina_inicial' %}" class="d-flex justify-content-center mb-4">
     <div class="input-group w-50">
       <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
@@ -153,7 +164,6 @@
 {% endif %}
 
 
-        <!-- Info -->
         <div class="mt-3">
           <small class="text-muted">
             <a href="#" data-bs-toggle="modal" data-bs-target="#curtidasModal{{ post.id }}">{{ post.curtidas.count }} curtida{{ post.curtidas.count|pluralize }}</a> ·
@@ -161,9 +171,7 @@
           </small>
         </div>
 
-        <!-- Ações -->
         <div class="d-flex align-items-center mt-3 gap-2 flex-wrap">
-          <!-- Curtir -->
           <form method="post" action="{% url 'curtir_post' post.id %}">
             {% csrf_token %}
             <button type="submit" class="btn btn-outline-danger rounded-circle" style="width: 40px; height: 40px;">
@@ -172,13 +180,11 @@
           </form>
 
 
-          <!-- Comentar -->
           <form method="post" action="{% url 'comentar_post' post.id %}" class="d-flex align-items-center w-100 gap-2">
             {% csrf_token %}
             <input type="text" name="comentario" class="form-control rounded-pill" placeholder="Comente...">
             <button type="submit" class="btn text-white px-3" style="background-color: #4B0082; border-radius: 12px;">Enviar</button>
           </form>
-          <!-- Compartilhar -->
           <form method="post" action="{% url 'compartilhar_post' post.id %}" class="d-inline share-form">
             {% csrf_token %}
             <button type="submit"
@@ -189,7 +195,6 @@
           </form>
         </div>
 
-        <!-- Modal Comentários -->
         <div class="modal fade" id="comentariosModal{{ post.id }}" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -211,7 +216,6 @@
           </div>
         </div>
 
-        <!-- Modal Curtidas -->
         <div class="modal fade" id="curtidasModal{{ post.id }}" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -233,8 +237,7 @@
           </div>
         </div>
 
-                
-        <!-- Modal Tags -->
+
         <div class="modal fade" id="tagsModal{{ post.id }}" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -272,9 +275,37 @@
   {% empty %}
     <p class="text-center text-muted">Nenhuma postagem ainda.</p>
   {% endfor %}
+
+  {% if posts.has_other_pages %}
+  <nav aria-label="Navegação da página">
+    <ul class="pagination justify-content-center">
+      {% if posts.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.previous_page_number }}" style="color: #4B0082;">Anterior</a>
+      </li>
+      {% endif %}
+
+      {% for i in posts.paginator.page_range %}
+      {% if posts.number == i %}
+      <li class="page-item active" aria-current="page">
+        <span class="page-link" style="background-color: #4B0082; border-color: #4B0082; color: white;">{{ i }}</span>
+      </li>
+      {% elif i > posts.number|add:'-3' and i < posts.number|add:'3' %}
+      <li class="page-item"><a class="page-link" href="?page={{ i }}" style="color: #4B0082;">{{ i }}</a></li>
+      {% endif %}
+      {% endfor %}
+
+      {% if posts.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ posts.next_page_number }}" style="color: #4B0082;">Próximo</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
 </div>
 
-<!-- Sidebar Perfil Estilizada -->
 <div class="offcanvas offcanvas-end offcanvas-custom" tabindex="-1" id="sidebarPerfil" aria-labelledby="sidebarPerfilLabel" style="width: 280px;">
   <div class="offcanvas-header border-bottom">
     <h5 class="offcanvas-title" id="sidebarPerfilLabel">Minha Conta</h5>
@@ -302,7 +333,7 @@
     </form>
 
     <div class="mt-auto text-center small">
-      Engenheiras do Amanhã &copy; {{ now|date:"Y" }}
+      Engenheiras do Amanhã © {{ now|date:"Y" }}
     </div>
   </div>
 </div>
@@ -310,10 +341,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Início do script de compartilhamento -->
   <script>
     document.querySelectorAll('.share-form').forEach(form => {
       form.addEventListener('submit', async (e) => {
@@ -355,6 +384,5 @@
     });
   </script>
 
-  <!-- Fim do script de compartilhamento -->
-</body>
+  </body>
 </html>

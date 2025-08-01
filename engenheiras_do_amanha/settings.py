@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,17 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-389b@u==olkrsgws=oo7w5g)$56$+8#-z(ju28%au1q^!jwsq1'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-389b@u==olkrsgws=oo7w5g)$56$+8#-z(ju28%au1q^!jwsq1') # <<-- CORRIGIDO para usar variável de ambiente
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False # <<-- CORRIGIDO: Deve ser False em produção!
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'pagina_inicial'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # <<-- CORRIGIDO: Caminho universal
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['engamanha.pythonanywhere.com'] # <<-- CORRIGIDO: Adicionado seu domínio de produção
 
 
 # Application definition
@@ -46,13 +45,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'comunidade',  # Adicione o aplicativo comunidade aqui
+    'comunidade',
     'taggit',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'captcha',
+    'metrics',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'metrics.middleware.RequestLogMiddleware',
 ]
 
 ROOT_URLCONF = 'engenheiras_do_amanha.urls'
@@ -71,8 +72,8 @@ ROOT_URLCONF = 'engenheiras_do_amanha.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'comunidade/templates')],
-        'APP_DIRS': True,
+        'DIRS': [], # <<-- CORRIGIDO: Lista de diretórios vazia.
+        'APP_DIRS': True, # <<-- CORRIGIDO: Deve ser True para que o Django encontre os templates dos apps.
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -92,8 +93,15 @@ WSGI_APPLICATION = 'engenheiras_do_amanha.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql', # <<-- CORRIGIDO: Mudar para MySQL
+        'NAME': 'engamanha$default', # <<-- CORRIGIDO: Nome exato do DB no PythonAnywhere
+        'USER': 'engamanha',         # <<-- CORRIGIDO: Seu usuário
+        'PASSWORD': '@bdeng2025',    # <<-- CORRIGIDO: Sua senha do DB
+        'HOST': 'engamanha.mysql.pythonanywhere-services.com', # <<-- CORRIGIDO: Host do DB
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     }
 }
 
@@ -132,8 +140,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'comunidade/static')]
+STATIC_URL = '/static/' # <<-- CORRIGIDO: Use uma barra no início e no final
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # <<-- CORRIGIDO: Necessário para produção
+STATICFILES_DIRS = [] # <<-- CORRIGIDO: Esta configuração não é mais necessária para produção
 
 
 # Default primary key field type
@@ -171,8 +180,7 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     }
 }
-
-import os
-#google ate dar o git push correto
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_SECRET')
+# As credenciais para o allauth são gerenciadas no painel de administração do Django.
+# As linhas a seguir não são necessárias para a configuração do allauth.
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_SECRET')
