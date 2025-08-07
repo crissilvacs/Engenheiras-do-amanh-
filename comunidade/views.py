@@ -7,15 +7,11 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .models import Post, Comentario, Curtida, Perfil, User
 from .forms import RegistroForm, LoginForm, PerfilForm, PostForm
-from django.contrib import messages
-from metrics.models import UserAction
-from django.contrib.contenttypes.models import ContentType
-from django.core.paginator import Paginator
-from django.urls import reverse
+from metrics.models import UserAction # <-- Importante: Adicionar esta importação
 
 # --- PONTUAÇÃO CENTRALIZADA ---
 PONTOS_NOVO_POST = 15
-PONTOS_COMENTARIO = 10
+PONTOS_COMENTARIO = 4
 PONTOS_COMPARTILHAMENTO = 5
 PONTOS_CURTIDA = 1
 BONUS_DIARIO = 10
@@ -23,13 +19,13 @@ LIMITE_CURTIDAS_DIARIAS = 10
 
 def gerenciar_pontos(user, tipo_acao):
     """
-    Função central para gerenciar toda a lógica de pontuação.
+    Função central para gerir toda a lógica de pontuação.
     """
     perfil, _ = Perfil.objects.get_or_create(user=user)
     hoje = timezone.now().date()
     pontos_adicionados = 0
     
-    # 1. Verifica e aplica o bônus diário
+    # 1. Verifica e aplica o bónus diário
     if perfil.ultima_interacao != hoje:
         pontos_adicionados += BONUS_DIARIO
         perfil.ultima_interacao = hoje
@@ -62,17 +58,12 @@ def pagina_inicial(request):
             Q(tags__name__icontains=query)
         ).distinct().prefetch_related('tags').order_by('-data_criacao')
     else:
-        posts_list = Post.objects.all().prefetch_related('tags').order_by('-data_criacao')
+        posts = Post.objects.all().prefetch_related('tags').order_by('-data_criacao')
     
     perfil, created = Perfil.objects.get_or_create(user=request.user)
     
-    # --- Lógica de Paginação ---
-    paginator = Paginator(posts_list, 10) # 10 posts por página
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
     return render(request, 'comunidade/pagina_inicial.html', {
-        'posts': page_obj,
+        'posts': posts,
         'perfil': perfil,
     })
 
@@ -86,7 +77,6 @@ def novo_post_view(request):
             post.save()
             form.save_m2m()
             gerenciar_pontos(request.user, 'post')
-            UserAction.objects.create(user=request.user, action_type='POST_CRIADO', content_object=post)
             return redirect('pagina_inicial')
     else:
         form = PostForm()
@@ -99,11 +89,17 @@ def comentar_post(request, post_id):
     if request.method == 'POST':
         texto = request.POST.get('comentario')
         if texto:
-            # Limite: Ganha pontos apenas no primeiro comentário em um post
+            # Limite: Ganha pontos apenas no primeiro comentário num post
             if not Comentario.objects.filter(post=post, autor=request.user).exists():
                 gerenciar_pontos(request.user, 'comentario')
-            Comentario.objects.create(post=post, autor=request.user, texto=texto)
-            UserAction.objects.create(user=request.user, action_type='COMENTARIO_CRIADO', content_object=Comentario)    
+            
+            # --- CORREÇÃO AQUI ---
+            # 1. Criamos o comentário e guardamo-lo numa variável
+            novo_comentario = Comentario.objects.create(post=post, autor=request.user, texto=texto)
+            
+            # 2. Usamos a variável 'novo_comentario' (a instância) para registar a ação
+            UserAction.objects.create(user=request.user, action_type='COMENTARIO_CRIADO', content_object=novo_comentario)
+
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
 
 @login_required
@@ -116,7 +112,6 @@ def curtir_post(request, post_id):
         curtidas_hoje = Curtida.objects.filter(usuario=request.user, data__date=timezone.now().date()).count()
         if curtidas_hoje <= LIMITE_CURTIDAS_DIARIAS:
             gerenciar_pontos(request.user, 'curtida')
-            UserAction.objects.create(user=request.user, action_type='CURTIDA_CRIADA', content_object=curtida)
     else:
         curtida.delete()
         
@@ -125,8 +120,6 @@ def curtir_post(request, post_id):
 @login_required
 def compartilhar_post(request, post_id):
     gerenciar_pontos(request.user, 'compartilhamento')
-    post = get_object_or_404(Post, id=post_id)
-    UserAction.objects.create(user=request.user, action_type='COMPARTILHAMENTO', content_object=post)    
     return redirect('pagina_inicial')
 
 # --- VIEWS DE AUTENTICAÇÃO E PERFIL ---
@@ -160,17 +153,9 @@ def registro_view(request):
             telefone = form.cleaned_data['telefone']
             if User.objects.filter(username=email).exists():
                 return render(request, 'comunidade/register.html', {'form': form, 'erro': 'Este e-mail já está em uso.'})
-            
-            try:
-                user = User.objects.create_user(username=email, email=email, password=senha, first_name=nome)
-                Perfil.objects.create(user=user, telefone=telefone)
-                return render(request, 'comunidade/register.html', {'show_success_modal': True})
-            except Exception as e:
-                    messages.error(request, f'Ocorreu um erro inesperado ao cadastrar: {e}')
-                    return render(request, 'comunidade/register.html', {'form': form})
-        else:
-            messages.error(request, 'Por favor, corrija os erros no formulário.')
-            return render(request, 'comunidade/register.html', {'form': form})
+            user = User.objects.create_user(username=email, email=email, password=senha, first_name=nome)
+            Perfil.objects.create(user=user, telefone=telefone)
+            return redirect('login')
     else:
         form = RegistroForm()
     return render(request, 'comunidade/register.html', {'form': form})
