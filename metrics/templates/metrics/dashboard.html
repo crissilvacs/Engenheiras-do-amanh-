@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Métricas</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body { background-color: #f1f2f6; font-family: sans-serif; padding-top: 70px; }
         .dashboard-header {
@@ -21,23 +22,27 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            text-align: center;
         }
-        .metric-card h2 { font-size: 1.25rem; color: #4B0082; margin-bottom: 15px; }
-        .metric-card p { font-size: 1.5rem; font-weight: bold; color: #333; }
+        .metric-card h2 { font-size: 1rem; color: #4B0082; margin-bottom: 5px; }
+        .metric-card p { font-size: 2rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .metric-card small { font-size: 0.8rem; color: #6c757d; }
         .chart-container { background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .table-responsive { max-height: 400px; overflow-y: auto; }
         .btn-purple { background-color: #4B0082; color: white; border: none; }
         .btn-purple:hover { background-color: #5d04a6; color: white; }
+        .text-purple { color: #4B0082; }
     </style>
 </head>
 <body>
     <div class="container mt-4">
         <div class="dashboard-header text-center">
-            <h1 class="fw-bold mb-0" style="color: #4B0082;">Dashboard de Métricas</h1>
+            <h1 class="fw-bold mb-0 text-purple">Dashboard de Métricas</h1>
             <p class="text-muted">Análise de uso e engajamento do sistema</p>
         </div>
 
         <div class="metric-card mb-4">
-            <h2 class="mb-3">Filtrar Dados</h2>
+            <h2 class="mb-3 text-purple">Filtrar Dados</h2>
             <form method="get" action="{% url 'metrics:dashboard' %}" class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label for="periodo" class="form-label">Período Predefinido</label>
@@ -62,32 +67,54 @@
         </div>
 
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2 mb-4">
                 <div class="metric-card">
-                    <h2 class="text-muted">Acessos ({{ periodo_selecionado|title }})</h2>
+                    <h2 class="text-muted">Acessos</h2>
                     <p>{{ pageviews_card }}</p>
-                    <p><small class="text-muted">Total: {{ total_pageviews }}</small></p>
+                    <small class="text-muted">Período</small>
+                    <hr class="text-muted">
+                    <p>{{ total_pageviews_geral }}</p>
+                    <small class="text-muted">Total</small>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2 mb-4">
                 <div class="metric-card">
                     <h2 class="text-muted">Posts</h2>
                     <p>{{ posts_card }}</p>
-                    <p><small class="text-muted">Total: {{ total_posts_geral }}</small></p>
+                    <small class="text-muted">Período</small>
+                    <hr class="text-muted">
+                    <p>{{ total_posts_geral }}</p>
+                    <small class="text-muted">Total</small>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2 mb-4">
                 <div class="metric-card">
                     <h2 class="text-muted">Curtidas</h2>
                     <p>{{ likes_card }}</p>
-                    <p><small class="text-muted">Total: {{ total_likes_geral }}</small></p>
+                    <small class="text-muted">Período</small>
+                    <hr class="text-muted">
+                    <p>{{ total_likes_geral }}</p>
+                    <small class="text-muted">Total</small>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 mb-4">
                 <div class="metric-card">
                     <h2 class="text-muted">Comentários</h2>
                     <p>{{ comments_card }}</p>
-                    <p><small class="text-muted">Total: {{ total_comments_geral }}</small></p>
+                    <small class="text-muted">Período</small>
+                    <hr class="text-muted">
+                    <p>{{ total_comments_geral }}</p>
+                    <small class="text-muted">Total</small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="metric-card">
+                    <h2 class="text-muted">Usuários</h2>
+                    <p>{{ users_card }}</p>
+                    <small class="text-muted">Novos no período</small>
+                    <hr class="text-muted">
+                    <p>{{ total_users_geral }}</p>
+                    <small class="text-muted">Total</small>
                 </div>
             </div>
         </div>
@@ -120,7 +147,6 @@
                                     <th>Método</th>
                                     <th>Timestamp</th>
                                     <th>IP</th>
-                                    <th>Link Admin</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -131,11 +157,10 @@
                                     <td>{{ pv.method }}</td>
                                     <td>{{ pv.timestamp|date:"d/m/Y H:i:s" }}</td>
                                     <td>{{ pv.ip_address|default:"N/A" }}</td>
-                                    <td><a href="{% url 'admin:metrics_pageview_change' pv.pk %}" target="_blank">Ver no Admin</a></td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="6" class="text-center">Nenhum acesso registrado.</td>
+                                    <td colspan="5" class="text-center">Nenhum acesso registrado.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -158,7 +183,6 @@
                                     <th>Timestamp</th>
                                     <th>Objeto</th>
                                     <th>Detalhes</th>
-                                    <th>Link Admin</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -169,11 +193,10 @@
                                     <td>{{ action.timestamp|date:"d/m/Y H:i:s" }}</td>
                                     <td>{{ action.content_object|default:"N/A" }}</td>
                                     <td>{{ action.details|default:"N/A" }}</td>
-                                    <td><a href="{% url 'admin:metrics_useraction_change' action.pk %}" target="_blank">Ver no Admin</a></td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="6" class="text-center">Nenhuma ação registrada.</td>
+                                    <td colspan="5" class="text-center">Nenhuma ação registrada.</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -185,10 +208,6 @@
 
         <p class="text-center mt-4">
             <a href="{% url 'metrics:export_csv' %}" class="btn btn-purple">Exportar Métricas (CSV)</a>
-        </p>
-
-        <p class="text-center mt-3">
-            <a href="{% url 'admin:index' %}" class="btn btn-link">Voltar para o Admin</a>
         </p>
     </div>
 

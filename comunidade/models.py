@@ -8,7 +8,7 @@ class Post(models.Model):
     conteudo = models.TextField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     imagem = models.ImageField(upload_to='posts/', blank=True, null=True)
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
     data_criacao = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

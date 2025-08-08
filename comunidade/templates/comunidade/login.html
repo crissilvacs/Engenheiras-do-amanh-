@@ -60,7 +60,7 @@
             font-size: 13px;
         }
         .forgot-link a {
-            color: #4B0082; /* Mudei a cor para combinar com a identidade visual */
+            color: #4B0082;
             text-decoration: none;
             font-weight: 500;
         }
@@ -142,7 +142,7 @@
     <!-- Formulário de Login -->
     <div class="container d-flex justify-content-center">
         <div class="form-container">
-            <p class="text-center fw-semibold">Para continuar, faça login.</p>
+            <p class="text-center fw-semibold">Para continuar, faça o login.</p>
             
             {% if messages %}
                 {% for message in messages %}
@@ -185,9 +185,12 @@
                     </button>
                 </div>
 
-                <!-- A linha "Esqueceu a senha" foi removida daqui -->
+                <!-- CORREÇÃO AQUI -->
+                <div class="forgot-link mb-3 text-center">
+                    Esqueceu a sua senha? <a href="{% url 'account_reset_password' %}">Clique aqui</a>
+                </div>
                 
-                <div class="d-grid gap-2 mt-3"> <!-- Adicionado margin-top para espaçamento -->
+                <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-purple w-100">Login</button>
                 </div>
             </form>
@@ -196,12 +199,12 @@
 
             <div class="d-grid gap-2">
                 <a href="{% provider_login_url 'google' process='login' %}" class="btn btn-google w-100">
-                    <i class="fab fa-google me-2"></i> Entrar com Google
+                    <i class="fab fa-google me-2"></i> Entrar com o Google
                 </a>
             </div>
 
             <div class="register-link">
-                Não tem uma conta? <a href="{% url 'registro' %}">Registre-se</a>
+                Não tem uma conta? <a href="{% url 'registro' %}">Registe-se</a>
             </div>
             
         </div>

@@ -38,9 +38,10 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['titulo', 'conteudo', 'imagem', 'tags']
-        widgets = {
-            'tags': TagWidget(attrs={'class': 'form-control', 'placeholder': 'Separe as tags por vírgulas'}),
-        }
+        tags = forms.CharField(
+        required=False, 
+        widget=TagWidget(attrs={'class': 'form-control', 'placeholder': 'Separe as tags por vírgulas'})
+    )
 
 
 # --- Formulário de Perfil ---
