@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
-    'metrics.middleware.RequestLogMiddleware',
+    # 'metrics.middleware.RequestLogMiddleware', # Comentado caso não esteja a usar localmente
 ]
 ROOT_URLCONF = 'engenheiras_do_amanha.urls'
 
