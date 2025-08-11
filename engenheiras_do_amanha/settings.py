@@ -48,7 +48,20 @@ if DEBUG:
             },
         },
     ]
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # <<-- ADICIONADO: Configuração de e-mail para desenvolvimento
+   
+    import environ
+    env = environ.Env()
+    environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+   # --- Configuração de E-mail para Produção (Gmail) ---
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER') # Lê o e-mail do ficheiro .env
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD') # Lê a senha de app do ficheiro .env
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 else:
     # --- Configurações para Ambiente de Produção (DEBUG=False) ---
     ALLOWED_HOSTS = ['engamanha.pythonanywhere.com']
