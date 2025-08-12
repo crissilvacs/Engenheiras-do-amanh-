@@ -205,31 +205,54 @@
                 </div>
             </div>
         </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="chart-container">
+                    <h2 class="mb-3">Prévia do CSV de Métricas Diárias</h2>
+                    <div id="csv-preview-container" class="table-responsive">
+                        {% if csv_preview_data %}
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Acessos</th>
+                                    <th>Posts</th>
+                                    <th>Curtidas</th>
+                                    <th>Comentários</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in csv_preview_data %}
+                                <tr>
+                                    <td>{{ row.Data }}</td>
+                                    <td>{{ row.Acessos }}</td>
+                                    <td>{{ row.Posts }}</td>
+                                    <td>{{ row.Curtidas }}</td>
+                                    <td>{{ row.Comentários }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p class="text-center text-muted">Nenhum dado encontrado para o período.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+<p class="text-center mt-4 d-flex justify-content-center gap-3">
+    <a href="#" id="export-csv-btn" class="btn btn-purple">Exportar Métricas (CSV)</a>
+</p>
 
-        <p class="text-center mt-4">
-            <a href="{% url 'metrics:export_csv' %}" class="btn btn-purple">Exportar Métricas (CSV)</a>
-        </p>
-    </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const periodoSelect = document.getElementById('periodo');
+        const dataInicioInput = document.getElementById('data_inicio');
+        const dataFimInput = document.getElementById('data_fim');
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const periodoSelect = document.getElementById('periodo');
-            const dataInicioInput = document.getElementById('data_inicio');
-            const dataFimInput = document.getElementById('data_fim');
-
-            function toggleDateInputs() {
-                if (periodoSelect.value !== 'custom') {
-                    dataInicioInput.disabled = true;
-                    dataFimInput.disabled = true;
-                } else {
-                    dataInicioInput.disabled = false;
-                    dataFimInput.disabled = false;
-                }
-            }
-
-            periodoSelect.addEventListener('change', toggleDateInputs);
+        function toggleDateInputs() {
             if (periodoSelect.value !== 'custom') {
                 dataInicioInput.disabled = true;
                 dataFimInput.disabled = true;
@@ -237,57 +260,103 @@
                 dataInicioInput.disabled = false;
                 dataFimInput.disabled = false;
             }
+        }
 
-            const pageViewsCtx = document.getElementById('pageViewsChart').getContext('2d');
-            new Chart(pageViewsCtx, {
-                type: 'line',
-                data: {
-                    labels: JSON.parse('{{ pageviews_labels_json|safe }}'),
-                    datasets: [{
-                        label: 'Acessos',
-                        data: JSON.parse('{{ pageviews_data_json|safe }}'),
-                        borderColor: '#4B0082',
-                        backgroundColor: 'rgba(75, 0, 130, 0.2)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { mode: 'index', intersect: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { display: false } }
-                    }
-                }
-            });
-
-            const actionsCtx = document.getElementById('actionsChart').getContext('2d');
-            new Chart(actionsCtx, {
-                type: 'bar',
-                data: {
-                    labels: JSON.parse('{{ actions_labels_json|safe }}'),
-                    datasets: [{
-                        label: 'Contagem',
-                        data: JSON.parse('{{ actions_data_json|safe }}'),
-                        backgroundColor: '#4B0082',
-                        borderColor: '#4B0082',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { display: false } }
-                    }
-                }
-            });
+        periodoSelect.addEventListener('change', toggleDateInputs);
+        if (periodoSelect.value !== 'custom') {
+            dataInicioInput.disabled = true;
+            dataFimInput.disabled = true;
+        } else {
+            dataInicioInput.disabled = false;
+            dataFimInput.disabled = false;
+        }
+        
+        // --- CÓDIGO CORRIGIDO DO BOTÃO DE EXPORTAÇÃO ---
+        const exportBtn = document.getElementById('export-csv-btn');
+        exportBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const periodoSelecionado = document.getElementById('periodo').value;
+            let dataInicio, dataFim;
+            
+            // Calcula as datas de acordo com o período selecionado
+            const hoje = new Date();
+            if (periodoSelecionado === '7dias') {
+                const inicio = new Date(hoje);
+                inicio.setDate(hoje.getDate() - 6);
+                dataInicio = inicio.toISOString().slice(0, 10);
+                dataFim = hoje.toISOString().slice(0, 10);
+            } else if (periodoSelecionado === '30dias') {
+                const hoje = new Date();
+                const inicio = new Date();
+                inicio.setDate(hoje.getDate() - 29);
+                dataInicio = inicio.toISOString().slice(0, 10);
+                dataFim = hoje.toISOString().slice(0, 10);
+            } else {
+                dataInicio = dataInicioInput.value;
+                dataFim = dataFimInput.value;
+            }
+            
+            // Constrói e navega para o URL de exportação
+            const url = `{% url "metrics:export_csv" %}?data_inicio=${dataInicio}&data_fim=${dataFim}`;
+            window.location.href = url;
         });
-    </script>
+        // --- FIM DO CÓDIGO CORRIGIDO ---
+
+        const pageViewsCtx = document.getElementById('pageViewsChart').getContext('2d');
+        const pageviewsLabelsJson = '{{ pageviews_labels_json|safe }}';
+        const pageviewsDataJson = '{{ pageviews_data_json|safe }}';
+
+        new Chart(pageViewsCtx, {
+            type: 'line',
+            data: {
+                labels: pageviewsLabelsJson ? JSON.parse(pageviewsLabelsJson) : [],
+                datasets: [{
+                    label: 'Acessos',
+                    data: pageviewsDataJson ? JSON.parse(pageviewsDataJson) : [],
+                    borderColor: '#4B0082',
+                    backgroundColor: 'rgba(75, 0, 130, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } }
+                }
+            }
+        });
+
+        const actionsCtx = document.getElementById('actionsChart').getContext('2d');
+        const actionsLabelsJson = '{{ actions_labels_json|safe }}';
+        const actionsDataJson = '{{ actions_data_json|safe }}';
+        new Chart(actionsCtx, {
+            type: 'bar',
+            data: {
+                labels: actionsLabelsJson ? JSON.parse(actionsLabelsJson) : [],
+                datasets: [{
+                    label: 'Contagem',
+                    data: actionsDataJson ? JSON.parse(actionsDataJson) : [],
+                    backgroundColor: '#4B0082',
+                    borderColor: '#4B0082',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } }
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
