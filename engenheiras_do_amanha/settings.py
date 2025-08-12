@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-389b@u==olkrsgws=oo7w5g)$56$+8#-z(ju28%au1q^!jwsq1')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True' # <<-- Mudar para False em produção
+DEBUG = os.environ.get('DEBUG', 'False') == 'True' # <<-- Mudar para False em produção
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'pagina_inicial'
 MEDIA_URL = '/media/'
@@ -48,20 +48,7 @@ if DEBUG:
             },
         },
     ]
-   
-    import environ
-    env = environ.Env()
-    environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
-
-   # --- Configuração de E-mail para Produção (Gmail) ---
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = env('EMAIL_HOST_USER') # Lê o e-mail do ficheiro .env
-    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD') # Lê a senha de app do ficheiro .env
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # <<-- ADICIONADO: Configuração de e-mail para desenvolvimento
 else:
     # --- Configurações para Ambiente de Produção (DEBUG=False) ---
     ALLOWED_HOSTS = ['engamanha.pythonanywhere.com']
@@ -75,7 +62,8 @@ else:
             'PORT': '',
             'OPTIONS': {
                 'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            }
+            },
+            'CONN_MAX_AGE': 600,
         }
     }
     STATICFILES_DIRS = []
@@ -166,8 +154,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
+
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+   'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 ACCOUNT_LOGOUT_ON_GET = True
