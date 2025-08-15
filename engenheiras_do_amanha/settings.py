@@ -69,8 +69,8 @@ else:
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+    EMAIL_HOST_USER = env('meninasstem492@gmail.com')
+    EMAIL_HOST_PASSWORD = env('bwlb vdus mkmj bdvj')
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
