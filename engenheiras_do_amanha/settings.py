@@ -4,37 +4,24 @@ Django settings for engenheiras_do_amanha project.
 
 import os
 from pathlib import Path
-import environ
 
-# Inicializa o django-environ no topo do ficheiro
-env = environ.Env(
-    DEBUG=(bool, False)
-)
 
-# Define o caminho base do projeto
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Tenta ler o ficheiro .env (para desenvolvimento local)
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+# Quick-start development settings - unsuitable for production
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-389b@u==olkrsgws=oo7w5g)$56$+8#-z(ju28%au1q^!jwsq1')
 
-# --- Configurações de Segurança e Chaves ---
-# Lê a SECRET_KEY do ambiente. Se não encontrar, usa uma chave insegura (só para emergências).
-SECRET_KEY = env('SECRET_KEY', default='django-insecure-fallback-key-for-local-dev')
-
-# Lê o modo DEBUG do ambiente. O padrão é True para desenvolvimento local.
-DEBUG = env.bool('DEBUG', default=False)
-
-
-# --- Configurações Gerais ---
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ.get('DEBUG', 'False') == 'True' # <<-- Mudar para False em produção
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'pagina_inicial'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
-# --- Configurações de Ambiente (Desenvolvimento vs. Produção) ---
-
+# Configurações que mudam entre desenvolvimento e produção
 if DEBUG:
     # --- Configurações para Ambiente de Desenvolvimento Local (DEBUG=True) ---
     ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
@@ -45,10 +32,23 @@ if DEBUG:
         }
     }
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'comunidade', 'static')]
-    
-    # Em desenvolvimento, os e-mails são IMPRESSOS NO TERMINAL
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
+    STATIC_ROOT = ''
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [os.path.join(BASE_DIR, 'comunidade/templates')],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                ],
+            },
+        },
+    ]
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # <<-- ADICIONADO: Configuração de e-mail para desenvolvimento
 else:
     # --- Configurações para Ambiente de Produção (DEBUG=False) ---
     ALLOWED_HOSTS = ['engamanha.pythonanywhere.com']
@@ -57,24 +57,35 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'engamanha$default',
             'USER': 'engamanha',
-            'PASSWORD': env('DB_PASSWORD'),
+            'PASSWORD': '@bdeng2025',
             'HOST': 'engamanha.mysql.pythonanywhere-services.com',
-            'PORT': '3306',
+            'PORT': '',
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            },
+            'CONN_MAX_AGE': 600,
         }
     }
+    STATICFILES_DIRS = []
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-    
-    # Em produção, usamos um servidor de e-mail real
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = env('meninasstem492@gmail.com')
-    EMAIL_HOST_PASSWORD = env('bwlb vdus mkmj bdvj')
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors': [
+                    'django.template.context_processors.debug',
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'django.contrib.messages.context_processors.messages',
+                ],
+            },
+        },
+    ]
 
 
-# --- Aplicações Instaladas (Comum a ambos os ambientes) ---
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -106,45 +117,46 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'engenheiras_do_amanha.urls'
+WSGI_APPLICATION = 'engenheiras_do_amanha.wsgi.application'
 
-TEMPLATES = [
+# Password validation
+AUTH_PASSWORD_VALIDATORS = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'comunidade', 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
-WSGI_APPLICATION = 'engenheiras_do_amanha.wsgi.application'
 
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
-]
-
+# Internationalization
 LANGUAGE_CODE = 'pt-br'
-TIME_ZONE = 'America/Recife'
+TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
+
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATICFILES_DIRS é configurado no if/else acima
+
+
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# --- Configurações do Django Allauth ---
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
+
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+   'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 ACCOUNT_LOGOUT_ON_GET = True
@@ -153,9 +165,16 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_ADAPTER = 'comunidade.adapters.CustomSocialAccountAdapter'
 
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online', 'prompt': 'select_account'}
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+            'prompt': 'select_account'
+        }
     }
 }
