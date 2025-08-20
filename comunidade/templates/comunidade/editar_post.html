@@ -1,65 +1,112 @@
 {% load static %}
-{% load i18n %}
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>{% trans "Change Password" %} - Engenheiras do Amanhã</title>
+    <title>Editar Publicação - Engenheiras do Amanhã</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f1f2f6; }
-        .brand-circle { width: 60px; height: 60px; background-color: #4B0082; border-radius: 50%; }
-        .navbar-brand-text { color: #4B0082; font-weight: bold; font-size: 24px; margin-left: 15px; }
-        .form-container { margin-top: 60px; max-width: 400px; padding: 30px; background: white; border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.1); }
-        .btn-purple { background-color: #4B0082; color: white; border-radius: 20px; border: none; }
-        .btn-purple:hover { background-color: #36005c; }
+        body { 
+            background-color: #f0f2f5; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .form-container { 
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        .form-container h3 {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .form-control:focus {
+            border-color: #4B0082;
+            box-shadow: 0 0 0 2px rgba(75, 0, 130, 0.2);
+        }
+        .btn-custom-purple {
+            background-color: #4B0082;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .btn-custom-purple:hover {
+            background-color: #3a0066;
+        }
+        .btn-custom-cancel {
+            background-color: #f0f0f0;
+            color: #555;
+            border: 1px solid #ddd;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .btn-custom-cancel:hover {
+            background-color: #e0e0e0;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar bg-light shadow-sm">
-        <div class="container-fluid d-flex align-items-center">
-            <div class="d-flex align-items-center">
-                <div class="brand-circle"></div>
-                <span class="navbar-brand-text">ENGENHEIRAS DO AMANHÃ</span>
-            </div>
-        </div>
-    </nav>
-    <div class="container d-flex justify-content-center">
-        <div class="form-container">
-            <h4 class="text-center fw-semibold mb-3">Crie a sua Nova Senha</h4>
+    <div class="form-container">
+        <h3 class="text-center">Editar sua publicação!</h3>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             
-            {% if form %}
-                <form method="POST" action="." class="password_reset_from_key">
-                    {% csrf_token %}
-                    
-                    <!-- CORREÇÃO AQUI: Usamos os nomes corretos para os campos: 'new_password1' e 'new_password2' -->
-                    <div class="mb-3">
-                        <label for="id_password1" class="form-label">Nova Senha:</label>
-                        <input type="password" name="new_password1" id="id_password1" class="form-control" required>
-                        {% for error in form.new_password1.errors %}
-                           <div class="invalid-feedback d-block">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                    <div class="mb-3">
-                        <label for="id_password2" class="form-label">Confirme a Nova Senha:</label>
-                        <input type="password" name="new_password2" id="id_password2" class="form-control" required>
-                        {% for error in form.new_password2.errors %}
-                           <div class="invalid-feedback d-block">{{ error }}</div>
-                        {% endfor %}
-                    </div>
+            <div class="mb-3">
+                <label for="id_titulo" class="form-label">Título:</label>
+                {{ form.titulo }}
+            </div>
+            
+            <div class="mb-3">
+                <label for="id_conteudo" class="form-label">Conteúdo:</label>
+                {{ form.conteudo }}
+            </div>
+            
+            <div class="mb-3">
+                <label for="id_imagem" class="form-label">Arquivo:</label>
+                {% if post.imagem %}
+                    <p class="text-muted small">Anexo atual: <a href="{{ post.imagem.url }}" target="_blank">{{ post.imagem.name }}</a></p>
+                {% endif %}
+                {{ form.imagem }}
+            </div>
 
-                    <div class="d-grid gap-2 mt-4">
-                        <button class="btn btn-purple" type="submit">Guardar Nova Senha</button>
-                    </div>
-                </form>
-            {% else %}
-                <p class="text-center text-danger">Este link de redefinição de senha é inválido ou já foi utilizado.</p>
-                <div class="d-grid gap-2 mt-4">
-                    <a href="{% url 'account_reset_password' %}" class="btn btn-purple">Pedir um novo link</a>
-                </div>
-            {% endif %}
-        </div>
+            <div class="mb-3">
+                <label for="id_tags" class="form-label">Tags (separadas por vírgula):</label>
+                {{ form.tags }}
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'perfil' %}" class="btn btn-custom-cancel">Cancelar</a>
+                <button type="submit" class="btn btn-custom-purple">Salvar Alterações</button>
+            </div>
+        </form>
     </div>
 </body>
 </html>

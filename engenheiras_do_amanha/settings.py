@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-389b@u==olkrsgws=oo7w5g)$56$+8#-z(ju28%au1q^!jwsq1')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True' # <<-- Mudar para False em produção
+DEBUG = os.environ.get('DEBUG', 'False') == 'False' # <<-- Mudar para False em produção
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'pagina_inicial'
 MEDIA_URL = '/media/'
@@ -84,7 +84,14 @@ else:
         },
     ]
 
-
+    # Configuração de E-mail para Produção (lendo de variáveis de ambiente)
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',

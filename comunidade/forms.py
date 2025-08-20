@@ -38,10 +38,16 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['titulo', 'conteudo', 'imagem', 'tags']
-        tags = forms.CharField(
-        required=False, 
-        widget=TagWidget(attrs={'class': 'form-control', 'placeholder': 'Separe as tags por vírgulas'})
-    )
+        
+        # --- CORREÇÃO AQUI ---
+        # Adicionamos widgets para aplicar as classes de estilo do Bootstrap
+        # a cada campo do formulário.
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'conteudo': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
+            'imagem': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'tags': TagWidget(attrs={'class': 'form-control', 'placeholder': 'Separe as tags por vírgulas'}),
+        }
 
 
 # --- Formulário de Perfil ---
