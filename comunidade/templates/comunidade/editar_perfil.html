@@ -3,13 +3,31 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Editar Perfil - Engenheiras do Amanhã</title>
+  <title>Editar Perfil - STEMA</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     body { background-color: #f1f2f6; }
     .logo-circle { width: 50px; height: 50px; background-color: #4B0082; border-radius: 50%; margin-right: 10px; }
     .nav-link.active { font-weight: bold; color: #4B0082 !important; }
+    .brand-logo { width: auto; height: 50px; object-fit: contain; display: block; }
+
+    /* Wrapper fixo p/ evitar "pulo" ao trocar imagem */
+    .avatar-wrapper{
+      width:130px; height:130px; margin:0 auto 12px;
+      position:relative;
+    }
+    .avatar-wrapper img{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover; border-radius:50%;
+      box-shadow:0 2px 6px rgba(0,0,0,.08);
+      transition: opacity .2s ease;
+    }
+    /* estados de visibilidade */
+    #preview-foto{ opacity:0; pointer-events:none; }
+    #preview-foto.is-visible{ opacity:1; }
+    #foto-atual.is-hidden{ opacity:0; }
   </style>
 </head>
 <body>
@@ -17,9 +35,9 @@
 <!-- Navbar com botão de sidebar no avatar -->
 <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4">
   <div class="container-fluid">
-    <div class="d-flex align-items-center">
-      <div class="logo-circle"></div>
-      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
+    <div class="d-flex align-items-center gap-2">
+      <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
+      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Sua Comunidade de Extensão</span>
     </div>
 
     <ul class="navbar-nav ms-auto">
@@ -46,19 +64,24 @@
     {% csrf_token %}
     <div class="row">
       <div class="col-md-4 text-center">
-        {% if perfil.foto %}
-          <img src="{{ perfil.foto.url }}" class="rounded-circle mb-3" width="130" height="130" alt="Foto de perfil">
-        {% else %}
-          <div class="rounded-circle bg-secondary mb-3" style="width: 130px; height: 130px;"></div>
-        {% endif %}
+
+        <!-- Foto atual + prévia sobrepostas -->
+        <div class="avatar-wrapper mb-3">
+          {% if perfil.foto %}
+            <img id="foto-atual" src="{{ perfil.foto.url }}" alt="Foto atual">
+          {% else %}
+            <img id="foto-atual" src="{% static 'comunidade/img/avatar-placeholder.png' %}" alt="Sem foto">
+          {% endif %}
+          <img id="preview-foto" alt="Prévia">
+        </div>
 
         <div class="mb-3 text-start">
           <label for="foto" class="form-label fw-bold">Foto de perfil</label>
-          <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
             <label for="foto" class="btn btn-outline-secondary btn-sm mb-0">Selecionar arquivo</label>
             <span id="nome-arquivo" class="text-truncate small text-muted" style="max-width: 200px;">Nenhum arquivo selecionado</span>
           </div>
-          <input class="form-control d-none" type="file" id="foto" name="foto" onchange="atualizarNomeArquivo(this)">
+          <input class="form-control d-none" type="file" id="foto" name="foto" accept="image/*" onchange="atualizarNomeArquivo(this)">
         </div>
       </div>
 
@@ -115,17 +138,67 @@
     </form>
 
     <div class="mt-auto text-center small">
-      Engenheiras do Amanhã &copy; {{ now|date:"Y" }}
+      STEMA &copy; {{ now|date:"Y" }}
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Atualiza o texto ao lado do botão com o nome do arquivo
   function atualizarNomeArquivo(input) {
     const nome = input.files.length > 0 ? input.files[0].name : "Nenhum arquivo selecionado";
     document.getElementById("nome-arquivo").textContent = nome;
   }
+
+  // Pré-visualização sem reflow (sobreposição + fade)
+  document.addEventListener('DOMContentLoaded', function () {
+    const input   = document.getElementById('foto');
+    const atual   = document.getElementById('foto-atual');
+    const preview = document.getElementById('preview-foto');
+
+    if (!input || !preview || !atual) return;
+
+    input.addEventListener('change', function () {
+      const file = this.files && this.files[0];
+
+      // Se não selecionou (ou cancelou), volta a exibir a foto atual
+      if (!file) {
+        preview.classList.remove('is-visible');
+        atual.classList.remove('is-hidden');
+        preview.removeAttribute('src');
+        return;
+      }
+
+      // Validação simples
+      if (!file.type.startsWith('image/')) {
+        alert('Selecione um arquivo de imagem (jpg, png, etc).');
+        this.value = '';
+        preview.classList.remove('is-visible');
+        atual.classList.remove('is-hidden');
+        preview.removeAttribute('src');
+        return;
+      }
+
+      const MAX_MB = 5;
+      if (file.size > MAX_MB * 1024 * 1024) {
+        alert(`Imagem muito grande. Tamanho máximo permitido: ${MAX_MB}MB.`);
+        this.value = '';
+        preview.classList.remove('is-visible');
+        atual.classList.remove('is-hidden');
+        preview.removeAttribute('src');
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      preview.onload = function () { URL.revokeObjectURL(url); };
+
+      // Mostra a prévia por cima, esconde a atual (fade)
+      preview.classList.add('is-visible');
+      atual.classList.add('is-hidden');
+    });
+  });
 </script>
 </body>
 </html>

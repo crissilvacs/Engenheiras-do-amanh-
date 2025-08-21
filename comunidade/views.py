@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
-from django.db.models import Q, F
+from django.db.models import Q, F, Prefetch
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .models import Post, Comentario, Curtida, Perfil, User
@@ -76,20 +76,44 @@ def gerenciar_pontos(user, tipo_acao, post_autor=None):
 @login_required
 def pagina_inicial(request):
     query = request.GET.get('q', '')
-    
+
+    # Base com autor+perfil (evita N+1) e comentários (com autor) já ordenados
+    qs = (
+        Post.objects
+        .select_related('autor__perfil')  # evita query pra foto do autor
+        .prefetch_related(
+            'tags',
+            Prefetch(
+                'comentarios',
+                queryset=Comentario.objects.select_related('autor').order_by('-data')
+            )
+        )
+        .order_by('-data_criacao')
+    )
+
     if query:
-        posts = Post.objects.filter(
+        qs = qs.filter(
             Q(titulo__icontains=query) |
             Q(conteudo__icontains=query) |
             Q(tags__name__icontains=query)
-        ).distinct().prefetch_related('tags').order_by('-data_criacao')
-    else:
-        posts = Post.objects.all().prefetch_related('tags').order_by('-data_criacao')
-    
-    perfil, created = Perfil.objects.get_or_create(user=request.user)
-    
+        ).distinct()
+
+    # Paginação (combina com seu template)
+    from django.core.paginator import Paginator, EmptyPage
+    paginator = Paginator(qs, 10)
+    page_number = request.GET.get('page')
+
+    try:
+        posts = paginator.page(page_number)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+    except:
+        posts = paginator.page(1)
+
+    perfil, _ = Perfil.objects.get_or_create(user=request.user)
+
     return render(request, 'comunidade/pagina_inicial.html', {
-        'posts': posts,
+        'posts': posts,   # é um Page, então has_other_pages etc. funcionam
         'perfil': perfil,
     })
 
@@ -190,7 +214,9 @@ def registro_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    # tenta usar ?next= ou input hidden; se não tiver, vai pra 'welcome'
+    next_url = request.POST.get('next') or request.GET.get('next')
+    return redirect(next_url or 'welcome')
 
 @login_required
 def perfil_view(request):
@@ -260,3 +286,10 @@ def solicitar_redefinicao_senha(request):
 
 def redefinir_senha(request):
     return redirect('login')
+
+def stema_welcome(request):
+    # Se já estiver logada, pula a welcome e vai pra home
+    if request.user.is_authenticated:
+        return redirect('pagina_inicial')
+    return render(request, 'comunidade/welcome.html')
+

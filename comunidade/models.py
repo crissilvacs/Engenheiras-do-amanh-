@@ -18,8 +18,9 @@ class Comentario(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comentarios')
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     texto = models.TextField()
-    data = models.DateTimeField(auto_now_add=True)
-
+    data = models.DateTimeField(auto_now_add=True, db_index= True)
+    class Meta:
+        ordering = ['-data']
 class Curtida(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='curtidas')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)

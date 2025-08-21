@@ -1,0 +1,252 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>STEMA — Bem-vinda</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4B0082" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --stema: #4B0082; /* roxo principal */
+            --stema-2: #883dce; /* roxo acento */
+            --ink: #222; /* texto */
+            --muted: #667085; /* texto secundário */
+            --light-purple: #f0e6ff; /* roxo claro para fundos */
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            color: var(--ink);
+            font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            background: #fff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Blob de fundo sutil */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, var(--stema-2) 0%, rgba(136, 61, 206, 0) 70%);
+            opacity: 0.15;
+            z-index: 0;
+            filter: blur(80px);
+        }
+        @media (max-width: 992px) {
+            body::before {
+                top: auto;
+                bottom: -150px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 500px;
+                height: 500px;
+            }
+        }
+
+        /* Navbar branca com logo */
+        .navbar {
+            background: #fff !important;
+            border-bottom: 1px solid rgba(0, 0, 0, .05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .04);
+            position: relative;
+            z-index: 2;
+        }
+        .brand-img { height: 44px; width: auto; display: block; }
+
+        /* HERO */
+        .hero {
+            min-height: calc(100vh - 64px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .headline {
+            font-weight: 800;
+            font-size: clamp(28px, 4.2vw, 48px);
+            line-height: 1.08;
+            color: var(--stema);
+        }
+        .lead {
+            color: var(--muted);
+            font-size: clamp(16px, 2.1vw, 18px);
+        }
+
+        .btn-stema {
+            background: var(--stema);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 24px;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(75, 0, 130, .18);
+            transition: background .2s, transform .2s;
+        }
+        .btn-stema:hover {
+            background: var(--stema-2);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .btn-outline-stema {
+            border: 1px solid var(--stema);
+            color: var(--stema);
+            border-radius: 14px;
+            padding: 12px 24px;
+            font-weight: 700;
+            transition: background .2s, color .2s, transform .2s;
+        }
+        .btn-outline-stema:hover {
+            background: var(--stema);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .logo-display {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Seção de Detalhes */
+        .details-section {
+            background: var(--light-purple);
+            padding: 60px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .details-headline {
+            font-weight: 800;
+            font-size: clamp(24px, 3vw, 36px);
+            line-height: 1.08;
+            color: var(--stema);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        /* Estilo dos cards de feature (mantido) */
+        .feature {
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, .05);
+            border-radius: 14px;
+            padding: 24px;
+            height: 100%;
+            transition: transform .2s, box-shadow .3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,.04);
+        }
+        .feature:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(75, 0, 130, .12);
+        }
+        .feature .feature-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: var(--light-purple);
+            border-radius: 50%;
+            margin-bottom: 16px;
+        }
+        .feature .feature-icon-container .bi {
+            font-size: 1.8rem;
+            color: var(--stema);
+        }
+        .feature h6 {
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--stema);
+        }
+        .feature .small {
+            font-size: .9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar py-2">
+        <div class="container d-flex align-items-center">
+            <a href="#" class="navbar-brand">
+                <img class="brand-img" src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA">
+            </a>
+            <div class="ms-auto d-flex gap-2">
+                <a class="btn btn-outline-stema" href="{% url 'login' %}">Entrar</a>
+                <a class="btn btn-stema" href="{% url 'registro' %}">Criar conta</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8">
+                    <img class="logo-display mb-4" src="{% static 'comunidade/img/logo1.png' %}" alt="Logo STEMA">
+                    <h1 class="headline mb-3">Bem-vinda à STEMA</h1>
+                    <p class="lead mb-4">Aprenda, compartilhe e cresça com a nossa comunidade de engenheiras do amanhã.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="details-section">
+        <div class="container">
+            <h2 class="details-headline">O que a STEMA oferece</h2>
+            <div class="row g-3 justify-content-center">
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="feature h-100 d-flex flex-column">
+                        <div class="feature-icon-container">
+                            <i class="bi bi-chat-square-heart"></i>
+                        </div>
+                        <h6>Comunidade ativa</h6>
+                        <div class="text-muted small mt-1">Posts, curtidas e comentários.</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="feature h-100 d-flex flex-column">
+                        <div class="feature-icon-container">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+                        <h6>Gamificação</h6>
+                        <div class="text-muted small mt-1">Ganhe pontos e suba no ranking.</div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="feature h-100 d-flex flex-column">
+                        <div class="feature-icon-container">
+                            <i class="bi bi-stars"></i>
+                        </div>
+                        <h6>Conteúdo rico</h6>
+                        <div class="text-muted small mt-1">Material rico e conteúdo educativo.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-4 border-top bg-white position-relative" style="z-index:1">
+        <div class="container d-flex flex-wrap justify-content-center align-items-center gap-2">
+            <span class="text-muted">STEMA © {{ now|date:"Y" }}</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Remover a funcionalidade de clicar em qualquer lugar para login
+    </script>
+</body>
+</html>

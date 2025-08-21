@@ -3,7 +3,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Comunidade - Engenheiras do Amanhã</title>
+  <title>Comunidade - STEMA</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
@@ -12,6 +12,7 @@
     .nav-link.active { font-weight: bold; color: #4B0082 !important; }
     .post-card { border-radius: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
     .post-author-circle { width: 30px; height: 30px; background-color: #4B0082; border-radius: 50%; }
+    .brand-logo { width: auto; height: 50px; object-fit: contain; display: block;}
 
     .btn-purple {
       background-color: #4B0082; /* Cor roxa */
@@ -65,9 +66,9 @@
 
 <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
   <div class="container-fluid">
-    <div class="d-flex align-items-center">
-      <div class="logo-circle"></div>
-      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
+    <div class="d-flex align-items-center gap-2">
+      <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
+      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Sua Comunidade de Extensão</span>
     </div>
     <ul class="navbar-nav ms-auto">
       <li class="nav-item">
@@ -90,7 +91,7 @@
 
 <div class="container mt-5">
   <div class="text-center mb-4">
-    <h4 class="fw-bold text-purple">Bem-vindo à Comunidade de Extensão</h4>
+    <h4 class="fw-bold text-purple">Bem-vindo à STEMA!</h4>
     <p>Compartilhe ideias, conecte-se com outros participantes e ganhe pontos com seu engajamento.</p>
   </div>
 
@@ -107,7 +108,12 @@
     </a>
   </div>
 
-<a href="{% url 'novo_post' %}" id="floatingBtn" class="btn btn-purple floating-btn d-flex justify-content-center align-items-center">
+<a href="{% url 'novo_post' %}" 
+    id="floatingBtn" 
+    class="btn btn-purple floating-btn d-flex justify-content-center align-items-center"
+    data-bs-toggle="tooltip"
+    data-bs-placement="left"
+    title="Criar novo post">
   <i class="bi bi-plus-lg fs-4"></i>
 </a>
 
@@ -170,6 +176,28 @@
             <a href="#" data-bs-toggle="modal" data-bs-target="#comentariosModal{{ post.id }}">{{ post.comentarios.count }} comentário{{ post.comentarios.count|pluralize }}</a>
           </small>
         </div>
+
+        {% with total_coment=post.comentarios.all|length %}
+          {% if total_coment %}
+            <div class="mt-2">
+              {% for comentario in post.comentarios.all|slice:":4" %}
+                <div class="mb-1">
+                  <small>
+                    <strong>{{ comentario.autor.first_name }}</strong>:
+                    {{ comentario.texto|truncatechars:180 }}
+                  </small>
+                </div>
+              {% endfor %}
+
+              {% if total_coment > 4 %}
+                <a href="#" class="small"
+                  data-bs-toggle="modal"
+                  data-bs-target="#comentariosModal{{ post.id }}">
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endwith %}
 
         <div class="d-flex align-items-center mt-3 gap-2 flex-wrap">
           <form method="post" action="{% url 'curtir_post' post.id %}">
@@ -333,7 +361,7 @@
     </form>
 
     <div class="mt-auto text-center small">
-      Engenheiras do Amanhã © {{ now|date:"Y" }}
+      STEMA © {{ now|date:"Y" }}
     </div>
   </div>
 </div>

@@ -3,7 +3,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Perfil - Engenheiras do Amanhã</title>
+  <title>Perfil - STEMA</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
@@ -11,6 +11,7 @@
     .logo-circle { width: 50px; height: 50px; background-color: #4B0082; border-radius: 50%; margin-right: 10px; }
     .nav-link.active { font-weight: bold; color: #4B0082 !important; }
     .post-card { border-radius: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    .brand-logo { width: auto; height: 50px; object-fit: contain; display: block;}
 
     .btn-edit-profile {
       background-color: #4B0082;
@@ -48,9 +49,9 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
   <div class="container-fluid">
-    <div class="d-flex align-items-center">
-      <div class="logo-circle"></div>
-      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Engenheiras do Amanhã</span>
+    <div class="d-flex align-items-center gap-2">
+      <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
+      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Sua Comunidade de Extensão</span>
     </div>
     <ul class="navbar-nav ms-auto">  
       <li class="nav-item">
@@ -157,7 +158,7 @@
     </form>
 
     <div class="mt-auto text-center small">
-      Engenheiras do Amanhã &copy; {{ now|date:"Y" }}
+      STEMA &copy; {{ now|date:"Y" }}
     </div>
   </div>
 </div>

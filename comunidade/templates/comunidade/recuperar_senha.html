@@ -15,6 +15,11 @@
             font-family: Arial, sans-serif;
         }
 
+        .brand-logo { width: auto;
+            height: 50px; 
+            object-fit: contain; 
+            display: block;}
+
         .circle {
             width: 60px;
             height: 60px;
@@ -62,10 +67,13 @@
 <body>
 
     <!-- Cabeçalho -->
-    <div class="d-flex align-items-center px-4 py-3 bg-light shadow-sm">
-        <div class="circle"></div>
-        <h1 class="brand-title m-0">ENGENHEIRAS DO AMANHÃ</h1>
+    <div class="container py-3">
+        <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
+            <span class="brand-title">STEMA — sua comunidade de extensão</span>
+        </div>
     </div>
+
 
     <!-- Formulário -->
     <div class="container d-flex justify-content-center">

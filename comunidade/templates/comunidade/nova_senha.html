@@ -57,6 +57,9 @@
             color: red;
             text-decoration: none;
         }
+
+        .brand-logo { width: auto; height: 50px; object-fit: contain; display: block;}
+
     </style>
 </head>
 <body>
@@ -64,9 +67,9 @@
     <!-- Cabeçalho -->
     <nav class="navbar bg-light shadow-sm">
         <div class="container-fluid d-flex align-items-center">
-            <div class="d-flex align-items-center">
-                <div class="brand-circle"></div>
-                <span class="navbar-brand-text">ENGENHEIRAS DO AMANHÃ</span>
+        <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
+            <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Sua Comunidade de Extensão</span>
             </div>
         </div>
     </nav>

@@ -16,6 +16,9 @@
             background-color: #f1f2f6;
             font-family: Arial, sans-serif;
         }
+
+        .brand-logo { width: auto; height: 50px; object-fit: contain; display: block;}
+
         .circle {
             width: 60px;
             height: 60px;
@@ -103,9 +106,9 @@
 <body>
 
     <header class="d-flex justify-content-between align-items-center px-4 py-3 bg-light shadow-sm">
-        <div class="d-flex align-items-center">
-            <div class="circle"></div>
-            <h4 class="m-0 fw-bold text-uppercase" style="color: #4B0082;">Engenheiras do Amanhã</h4>
+    <div class="d-flex align-items-center gap-2">
+        <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
+        <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Sua Comunidade de Extensão</span>
         </div>
     </header>
 
