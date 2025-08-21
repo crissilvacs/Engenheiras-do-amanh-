@@ -69,7 +69,7 @@
       margin-bottom: 8px;
     }
 
-    .xp {
+    .STEMs {
       font-size: 14px;
       margin-top: 5px;
     }
@@ -143,7 +143,7 @@
         {% endif %}
         <div>{{ perfil.user.first_name|default:"Usuário" }}</div>
         <div class="display-6">{{ forloop.counter }}</div>
-        <div class="xp">{{ perfil.pontos }} XP</div>
+        <div class="STEMs">{{ perfil.pontos }} STEMs</div>
       </div>
     {% endfor %}
   </div>
@@ -164,7 +164,7 @@
             {% endif %}
           </td>
           <td>{{ perfil.user.first_name }}</td>
-          <td class="text-end text-muted">{{ perfil.pontos }} XP</td>
+          <td class="text-end text-muted">{{ perfil.pontos }} STEMs</td>
         </tr>
         {% empty %}
         <tr><td colspan="4" class="text-center text-muted">Sem outros usuários no ranking.</td></tr>

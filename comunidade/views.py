@@ -7,9 +7,10 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .models import Post, Comentario, Curtida, Perfil, User
 from .forms import RegistroForm, LoginForm, PerfilForm, PostForm
-from metrics.models import UserAction # <-- Importante: Adicionar esta importação
+from metrics.models import UserAction
 
 # --- PONTUAÇÃO CENTRALIZADA ---
+# Ações Ativas
 PONTOS_NOVO_POST = 15
 PONTOS_COMENTARIO = 4
 PONTOS_COMPARTILHAMENTO = 5
@@ -17,33 +18,58 @@ PONTOS_CURTIDA = 1
 BONUS_DIARIO = 10
 LIMITE_CURTIDAS_DIARIAS = 10
 
-def gerenciar_pontos(user, tipo_acao):
+# Recompensas de Engajamento (para a autora do post)
+PONTOS_RECEBER_COMENTARIO = 4
+PONTOS_RECEBER_CURTIDA = 2
+PONTOS_RECEBER_COMPARTILHAMENTO = 3
+
+def gerenciar_pontos(user, tipo_acao, post_autor=None):
     """
     Função central para gerir toda a lógica de pontuação.
+    'user' é quem realiza a ação.
+    'post_autor' é o autor do post que está a receber a interação.
     """
-    perfil, _ = Perfil.objects.get_or_create(user=user)
-    hoje = timezone.now().date()
-    pontos_adicionados = 0
-    
-    # 1. Verifica e aplica o bónus diário
-    if perfil.ultima_interacao != hoje:
-        pontos_adicionados += BONUS_DIARIO
-        perfil.ultima_interacao = hoje
+    # Pontos para quem realiza a ação (o "ator")
+    if user:
+        perfil_ator, _ = Perfil.objects.get_or_create(user=user)
+        hoje = timezone.now().date()
+        pontos_adicionados_ator = 0
+        
+        # 1. Verifica e aplica o bónus diário para o ator
+        if perfil_ator.ultima_interacao != hoje:
+            pontos_adicionados_ator += BONUS_DIARIO
+            perfil_ator.ultima_interacao = hoje
 
-    # 2. Aplica a pontuação da ação específica
-    if tipo_acao == 'post':
-        pontos_adicionados += PONTOS_NOVO_POST
-    elif tipo_acao == 'comentario':
-        pontos_adicionados += PONTOS_COMENTARIO
-    elif tipo_acao == 'curtida':
-        pontos_adicionados += PONTOS_CURTIDA
-    elif tipo_acao == 'compartilhamento':
-        pontos_adicionados += PONTOS_COMPARTILHAMENTO
+        # 2. Aplica a pontuação da ação específica
+        if tipo_acao == 'post':
+            pontos_adicionados_ator += PONTOS_NOVO_POST
+        elif tipo_acao == 'comentario':
+            pontos_adicionados_ator += PONTOS_COMENTARIO
+        elif tipo_acao == 'curtida':
+            pontos_adicionados_ator += PONTOS_CURTIDA
+        elif tipo_acao == 'compartilhamento':
+            pontos_adicionados_ator += PONTOS_COMPARTILHAMENTO
 
-    # 3. Atualiza os pontos do perfil de forma segura
-    if pontos_adicionados > 0:
-        perfil.pontos = F('pontos') + pontos_adicionados
-        perfil.save()
+        # 3. Atualiza os pontos do perfil do ator
+        if pontos_adicionados_ator > 0:
+            perfil_ator.pontos = F('pontos') + pontos_adicionados_ator
+            perfil_ator.save()
+
+    # 4. Pontos para a autora do post (se aplicável e se não for a mesma pessoa)
+    if post_autor and post_autor != user:
+        perfil_autor, _ = Perfil.objects.get_or_create(user=post_autor)
+        pontos_adicionados_autor = 0
+        if tipo_acao == 'comentario':
+            pontos_adicionados_autor += PONTOS_RECEBER_COMENTARIO
+        elif tipo_acao == 'curtida':
+            pontos_adicionados_autor += PONTOS_RECEBER_CURTIDA
+        elif tipo_acao == 'compartilhamento':
+            pontos_adicionados_autor += PONTOS_RECEBER_COMPARTILHAMENTO
+        
+        if pontos_adicionados_autor > 0:
+            perfil_autor.pontos = F('pontos') + pontos_adicionados_autor
+            perfil_autor.save()
+
 
 # --- VIEWS PRINCIPAIS E DE GAMIFICAÇÃO ---
 
@@ -89,15 +115,11 @@ def comentar_post(request, post_id):
     if request.method == 'POST':
         texto = request.POST.get('comentario')
         if texto:
-            # Limite: Ganha pontos apenas no primeiro comentário num post
+            # Limite: A pontuação (para ambos) só é dada no primeiro comentário de um utilizador num post.
             if not Comentario.objects.filter(post=post, autor=request.user).exists():
-                gerenciar_pontos(request.user, 'comentario')
+                gerenciar_pontos(request.user, 'comentario', post_autor=post.autor)
             
-            # --- CORREÇÃO AQUI ---
-            # 1. Criamos o comentário e guardamo-lo numa variável
             novo_comentario = Comentario.objects.create(post=post, autor=request.user, texto=texto)
-            
-            # 2. Usamos a variável 'novo_comentario' (a instância) para registar a ação
             UserAction.objects.create(user=request.user, action_type='COMENTARIO_CRIADO', content_object=novo_comentario)
 
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
@@ -108,19 +130,25 @@ def curtir_post(request, post_id):
     curtida, created = Curtida.objects.get_or_create(post=post, usuario=request.user)
 
     if created:
-        # Limite: Ganha pontos apenas nas 10 primeiras curtidas do dia
+        # Limite para quem curte: Ganha pontos apenas nas 10 primeiras curtidas do dia
         curtidas_hoje = Curtida.objects.filter(usuario=request.user, data__date=timezone.now().date()).count()
         if curtidas_hoje <= LIMITE_CURTIDAS_DIARIAS:
-            gerenciar_pontos(request.user, 'curtida')
+            gerenciar_pontos(request.user, 'curtida', post_autor=post.autor)
+        else:
+            # Se o limite de curtidas diárias foi atingido, só a autora ganha pontos
+            gerenciar_pontos(None, 'curtida', post_autor=post.autor)
     else:
         curtida.delete()
+        # Lógica para remover pontos (opcional)
         
     return HttpResponseRedirect(f"{reverse('pagina_inicial')}#post-{post.id}")
 
 @login_required
 def compartilhar_post(request, post_id):
-    gerenciar_pontos(request.user, 'compartilhamento')
+    post = get_object_or_404(Post, id=post_id)
+    gerenciar_pontos(request.user, 'compartilhamento', post_autor=post.autor)
     return redirect('pagina_inicial')
+
 
 # --- VIEWS DE AUTENTICAÇÃO E PERFIL ---
 
