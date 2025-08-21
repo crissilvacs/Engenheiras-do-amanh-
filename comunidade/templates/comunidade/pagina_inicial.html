@@ -58,7 +58,8 @@
         background-color: #883dce; /* Tom de roxo mais claro no hover */
         color: white;
     }
-
+    .post-image{ border-radius: 12px; overflow: hidden; }
+    .post-img{ width: 100%; max-height: 420px; object-fit: contain; } /* ajuste o 420px aqui */
 
   </style>
 </head>
@@ -133,8 +134,8 @@
         <p>{{ post.conteudo|linebreaksbr }}</p>
 
         {% if post.imagem %}
-        <div class="text-center mt-3">
-          <img src="{{ post.imagem.url }}" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;">
+        <div class="post-image mt-3">
+          <img src="{{ post.imagem.url }}" class="post-img img-fluid" alt="">
         </div>
         {% endif %}
 
