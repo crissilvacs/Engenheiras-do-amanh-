@@ -175,6 +175,49 @@
         .feature .small {
             font-size: .9rem;
         }
+
+        /* Novas seções */
+        .info-section {
+            padding: 60px 0;
+        }
+        .info-section h2 {
+            font-weight: 800;
+            color: var(--stema);
+            margin-bottom: 24px;
+        }
+        .info-section p {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+        .contact-info a {
+            color: var(--stema);
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+        .contact-info .bi {
+            color: var(--stema);
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+        .member-card {
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, .05);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .member-card h6 {
+            color: var(--stema);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .member-card .small {
+            color: var(--muted);
+            font-size: .9rem;
+        }
     </style>
 </head>
 <body>
@@ -238,6 +281,62 @@
         </div>
     </section>
 
+    <section class="info-section bg-white">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-12 col-lg-8">
+                    <h2 class="headline">Nossa Motivação</h2>
+                    <p>A STEMA nasce como um espaço feito para garotas do IFPE Ipojuca que querem se aproximar (ou mergulhar de vez) em ciência, tecnologia, engenharia e matemática. A gente sabe que muitas alunas têm curiosidade e talento, mas esbarram em falta de referências, acolhimento e caminhos práticos para começar. Por isso, reunimos conteúdos, projetos de extensão, desafios e uma comunidade segura para aprender, testar ideias e crescer juntas.</p>
+                    <p>Aqui no campus, a STEMA conecta as estudantes a oportunidades reais — grupos de estudo, eventos, oficinas, mentoras e iniciativas locais — valorizando cada participação com um sistema de pontuação que reconhece o esforço e a colaboração. Mais do que uma plataforma, é um ponto de encontro: espaço para trocar experiências, mostrar projetos, quebrar estereótipos e construir confiança.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-section details-section">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-12 col-lg-8">
+                    <h2 class="details-headline">Nossa Equipe</h2>
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <div class="member-card">
+                                <h6>Fátima Cristina</h6>
+                                <div class="small">Desenvolvedora</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="member-card">
+                                <h6>Guilherme Amorim</h6>
+                                <div class="small">Desenvolvedor e Organizador</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="member-card">
+                                <h6>Ially Alice</h6>
+                                <div class="small">Desenvolvedora</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-section bg-white">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-12 col-lg-8">
+                    <h2 class="headline">Contato</h2>
+                    <div class="contact-info">
+                        <p><i class="bi bi-envelope"></i> <a href="mailto:stema@ipojuca.ifpe.edu.br">stema@ipojuca.ifpe.edu.br</a></p>
+                        <p><i class="bi bi-geo-alt"></i> Rodovia PE 60, Km 14, Califórnia, Ipojuca, PE, CEP: 55590-000</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer class="py-4 border-top bg-white position-relative" style="z-index:1">
         <div class="container d-flex flex-wrap justify-content-center align-items-center gap-2">
             <span class="text-muted">STEMA © {{ now|date:"Y" }}</span>
@@ -246,7 +345,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Remover a funcionalidade de clicar em qualquer lugar para login
     </script>
 </body>
 </html>

@@ -73,20 +73,26 @@ def gerenciar_pontos(user, tipo_acao, post_autor=None):
 
 # --- VIEWS PRINCIPAIS E DE GAMIFICAÇÃO ---
 
+from django.db.models import Q, F, Prefetch, Count  # Count aqui
+
 @login_required
 def pagina_inicial(request):
     query = request.GET.get('q', '')
 
-    # Base com autor+perfil (evita N+1) e comentários (com autor) já ordenados
     qs = (
         Post.objects
-        .select_related('autor__perfil')  # evita query pra foto do autor
+        .select_related('autor__perfil')
         .prefetch_related(
             'tags',
+            'curtidas',
             Prefetch(
                 'comentarios',
-                queryset=Comentario.objects.select_related('autor').order_by('-data')
+                queryset=Comentario.objects.select_related('autor__perfil').order_by('-data')
             )
+        )
+        .annotate(
+            num_comentarios=Count('comentarios', distinct=True),
+            num_curtidas=Count('curtidas', distinct=True),
         )
         .order_by('-data_criacao')
     )
@@ -98,7 +104,6 @@ def pagina_inicial(request):
             Q(tags__name__icontains=query)
         ).distinct()
 
-    # Paginação (combina com seu template)
     from django.core.paginator import Paginator, EmptyPage
     paginator = Paginator(qs, 10)
     page_number = request.GET.get('page')
@@ -112,10 +117,19 @@ def pagina_inicial(request):
 
     perfil, _ = Perfil.objects.get_or_create(user=request.user)
 
+    # >>> AQUI: ids dos posts da página que o usuário já curtiu
+    page_post_ids = list(posts.object_list.values_list('id', flat=True))
+    liked_post_ids = list(
+        Curtida.objects.filter(usuario=request.user, post_id__in=page_post_ids)
+        .values_list('post_id', flat=True)
+    )
+
     return render(request, 'comunidade/pagina_inicial.html', {
-        'posts': posts,   # é um Page, então has_other_pages etc. funcionam
+        'posts': posts,
         'perfil': perfil,
+        'liked_post_ids': liked_post_ids,  # usado no template para pintar o coração
     })
+
 
 @login_required
 def novo_post_view(request):

@@ -14,53 +14,151 @@
     .post-author-circle { width: 30px; height: 30px; background-color: #4B0082; border-radius: 50%; }
     .brand-logo { width: auto; height: 50px; object-fit: contain; display: block;}
 
-    .btn-purple {
-      background-color: #4B0082; /* Cor roxa */
-      border: none;
-      color: white  ;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+    .btn-purple { background-color: #4B0082; border: none; color: white; transition: transform .3s, box-shadow .3s; }
+    .btn-purple:hover { background-color: #883dce; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,.2); }
+    .btn-purple:active { transform: translateY(0); }
+    .floating-btn { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; z-index: 999; display: none; }
 
-    .btn-purple:hover {
-      background-color: #883dce; /* Tom de roxo mais claro no hover */
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
+    .pagination .page-item .page-link { color: #4B0082; }
+    .pagination .page-item.active .page-link { background-color: #4B0082; border-color: #4B0082; color: white; }
+    .pagination .page-item:not(.active) .page-link:hover { background-color: #883dce; color: white; }
 
-    .btn-purple:active {
-      transform: translateY(0);
-    }
+    /* Imagens do post */
+    .post-image{ border-radius: 12px; overflow: hidden; }
+    .post-img{ width: 100%; max-height: 420px; object-fit: contain; }
 
-    .btn-purple i {
-      font-size: 1.5rem;
+    /* Barra de ações - Melhorada (novos ajustes) */
+    .action-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px; /* Reduzido o gap */
+        padding: 8px 12px; /* Reduzido o padding */
+        background: #fafafa;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        margin-top: 1rem;
     }
-
-    .floating-btn {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      z-index: 999;
-      display: none;
+    .action-left {
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Reduzido o gap */
     }
-
-    .pagination .page-item .page-link {
+    .btn-icon {
+        width: 40px; /* Ajustado para 40px */
+        height: 40px; /* Ajustado para 40px */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px; /* Totalmente circular */
+        border: 1px solid #e5e7eb;
+        background: #fff;
+        color: #6b7280;
+        transition: background .15s, transform .15s, box-shadow .15s, border-color .15s;
+    }
+    .btn-icon:hover { background: #f3f4f6; color: #4B0082; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .counter { 
+        color: #667085; 
+        font-size: .85rem; /* Ajustado o tamanho da fonte */
+        display: flex; 
+        align-items: center; 
+        gap: 5px; /* Reduzido o gap */
+    }
+    .counter a {
+        color: #667085;
+        text-decoration: none;
+        transition: color .2s;
+    }
+    .counter a:hover {
         color: #4B0082;
     }
-    .pagination .page-item.active .page-link {
-        background-color: #4B0082;
-        border-color: #4B0082;
-        color: white;
-    }
-    .pagination .page-item:not(.active) .page-link:hover {
-        background-color: #883dce; /* Tom de roxo mais claro no hover */
-        color: white;
-    }
-    .post-image{ border-radius: 12px; overflow: hidden; }
-    .post-img{ width: 100%; max-height: 420px; object-fit: contain; } /* ajuste o 420px aqui */
 
+    /* Like ativo (coração preenchido) */
+    .btn-like { color: #e11d48; }
+    .btn-like.active {
+        background: #ffe4ea;
+        border-color: #ffd3dd;
+        color: #e11d48;
+        box-shadow: 0 6px 14px rgba(225,29,72,.15);
+    }
+    .btn-like .bi{ color: currentColor; }
+
+    /* Prévia dos 4 comentários - Melhorada */
+    .comment-list {
+      margin-top: 1rem;
+      border-radius: 12px;
+    }
+    .comment-item {
+        display: flex;
+        gap: 12px;
+        padding: 10px 0;
+    }
+    .comment-item + .comment-item {
+        border-top: 1px dashed #e5e7eb;
+    }
+    .c-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .c-content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+    .c-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .c-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+    .c-time {
+        font-size: .8rem;
+        color: #9aa0a6;
+    }
+    .c-text {
+        font-size: 0.9rem;
+        color: #555;
+        margin-top: 4px;
+        line-height: 1.4;
+    }
+
+    .see-all { color: #6a1b9a; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .see-all:hover { text-decoration: underline; }
+
+    /* Form de comentar (linha) */
+    .comment-inline{ display:flex; align-items:center; gap:10px; margin-top:10px; }
+    .comment-inline .comment-input{
+      flex:1; border-radius:999px; padding:10px 14px; background:#f8f9fb; border:1px solid #e5e7eb;
+    }
+    .comment-inline .comment-input:focus{ background:#fff; box-shadow:none; border-color:#c7c9d1; }
+    .comment-inline .btn-send{ border-radius:999px; background:#4B0082; color:#fff; }
+    .comment-inline .btn-send:hover{ background:#883dce; }
+
+    /* Modais (comentários & curtidas) – mesmo estilo */
+    .modal-elevated .modal-content{ border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,.18); border:0; }
+    .modal-elevated .modal-header{ border-bottom:1px solid #eef0f4; }
+    .modal-elevated .modal-title{ font-weight:700; }
+    .modal-subtitle{ font-size:.9rem; color:#6b7280; }
+
+    .list-bubbles .item{ display:flex; gap:12px; padding:12px 0; }
+    .list-bubbles .item + .item{ border-top:1px solid #f1f2f4; }
+    .list-bubbles .avatar{ width:38px; height:38px; border-radius:50%; object-fit:cover; }
+    .list-bubbles .bubble{ background:#fafafa; border:1px solid #eee; padding:10px 12px; border-radius:12px; width:100%; }
+    .list-bubbles .meta{ display:flex; align-items:center; justify-content:space-between; }
+    .list-bubbles .name{ font-weight:600; }
+    .list-bubbles .time{ font-size:.8rem; color:#9aa0a6; }
+
+    .modal-footer.input-footer{ gap:10px; }
+    .modal-footer.input-footer .form-control{ border-radius:999px; background:#f8f9fb; }
+    .modal-footer.input-footer .btn-send{ background:#4B0082; color:#fff; border-radius:999px; }
+    .modal-footer.input-footer .btn-send:hover{ background:#883dce; }
   </style>
 </head>
 <body>
@@ -69,24 +167,28 @@
   <div class="container-fluid">
     <div class="d-flex align-items-center gap-2">
       <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
-      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Sua Comunidade de Extensão</span>
+      <a href="{% url 'pagina_inicial' %}" class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Ciência e Tecnologia para Mulheres</a>
     </div>
     <ul class="navbar-nav ms-auto">
       <li class="nav-item">
-        <form method="post" action="{% url 'logout' %}" class="d-inline">
-          {% csrf_token %}
-
-        </form>
+        <form method="post" action="{% url 'logout' %}" class="d-inline">{% csrf_token %}</form>
       </li>
       <li class="nav-item"><a class="nav-link active" href="{% url 'pagina_inicial' %}">Home</a></li>
       <li class="nav-item"><a class="nav-link" href="{% url 'ranking' %}">Ranking</a></li>
-    </ul>
-    {% if perfil.foto %}
-  <img src="{{ perfil.foto.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil">
-{% else %}
-  <div class="logo-circle" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil" style="cursor: pointer;"></div>
-{% endif %}
 
+      {# Condição para exibir links de Admin e Métricas #}
+      {% if request.user.is_superuser %}
+        <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'metrics:dashboard' %}">Métricas</a></li>
+      {% endif %}
+
+    </ul>
+
+    {% if perfil.foto %}
+      <img src="{{ perfil.foto.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil">
+    {% else %}
+      <div class="logo-circle" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil" style="cursor: pointer;"></div>
+    {% endif %}
   </div>
 </nav>
 
@@ -96,42 +198,35 @@
     <p>Compartilhe ideias, conecte-se com outros participantes e ganhe pontos com seu engajamento.</p>
   </div>
 
-
   <form method="get" action="{% url 'pagina_inicial' %}" class="d-flex justify-content-center mb-4">
     <div class="input-group w-50">
       <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
       <input type="text" name="q" class="form-control rounded-end" placeholder="Pesquise posts do seu interesse" value="{{ request.GET.q }}">
     </div>
   </form>
+
   <div class="d-flex justify-content-center mb-4">
     <a href="{% url 'novo_post' %}" class="btn btn-purple btn-lg shadow-lg rounded-pill py-3 px-5 d-flex align-items-center gap-3">
       <i class="bi bi-plus-circle"></i> Criar Novo Post
     </a>
   </div>
 
-<a href="{% url 'novo_post' %}" 
-    id="floatingBtn" 
-    class="btn btn-purple floating-btn d-flex justify-content-center align-items-center"
-    data-bs-toggle="tooltip"
-    data-bs-placement="left"
-    title="Criar novo post">
-  <i class="bi bi-plus-lg fs-4"></i>
-</a>
+  <a href="{% url 'novo_post' %}" id="floatingBtn" class="btn btn-purple floating-btn d-flex justify-content-center align-items-center" data-bs-toggle="tooltip" data-bs-placement="left" title="Criar novo post">
+    <i class="bi bi-plus-lg fs-4"></i>
+  </a>
 
   {% for post in posts %}
   <div id="post-{{ post.id }}" class="bg-white p-4 mb-4 post-card">
     <div class="d-flex align-items-start">
       {% if post.autor.perfil.foto %}
-  <img src="{{ post.autor.perfil.foto.url }}"
-       class="rounded-circle me-3"
-       style="width:30px; height:30px; object-fit:cover;">
-{% else %}
-  <div class="post-author-circle me-3"></div>
-{% endif %}
+        <img src="{{ post.autor.perfil.foto.url }}" class="rounded-circle me-3" style="width:30px; height:30px; object-fit:cover;">
+      {% else %}
+        <div class="post-author-circle me-3"></div>
+      {% endif %}
       <div class="flex-grow-1">
-        <p class="text-muted small">Postado por {{ post.autor.first_name }}</p>
+        <p class="text-muted small mb-1">Postado por <strong>{{ post.autor.first_name }}</strong></p>
         <h6 class="fw-bold">{{ post.titulo }}</h6>
-        <p>{{ post.conteudo|linebreaksbr }}</p>
+        <p class="mb-2">{{ post.conteudo|linebreaksbr }}</p>
 
         {% if post.imagem %}
         <div class="post-image mt-3">
@@ -139,11 +234,12 @@
         </div>
         {% endif %}
 
+        {# Embeds do YouTube pelo texto #}
         {% for word in post.conteudo.split %}
           {% if "youtube.com/watch?v=" in word %}
             {% with word|cut:"https://www.youtube.com/watch?v="|slice:":11" as video_id %}
               <div class="d-flex justify-content-center mt-3">
-                <div class="ratio ratio-16x9" style="max-width: 480px;">
+                <div class="ratio ratio-16x9" style="max-width: 560px;">
                   <iframe src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
                 </div>
               </div>
@@ -151,7 +247,7 @@
           {% elif "youtu.be/" in word %}
             {% with word|cut:"https://youtu.be/"|slice:":11" as video_id %}
               <div class="d-flex justify-content-center mt-3">
-                <div class="ratio ratio-16x9" style="max-width: 530px;">
+                <div class="ratio ratio-16x9" style="max-width: 560px;">
                   <iframe src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
                 </div>
               </div>
@@ -160,140 +256,185 @@
         {% endfor %}
 
         {% if post.tags.all %}
-    <div class="mt-2">
-        <strong style="color: #555;">Tags:</strong>
-        {% for tag in post.tags.all %}
-            <span style="background-color: #eee; border-radius: 4px; padding: 2px 6px; font-size: 0.9em;">
-                {{ tag.name }}
-            </span>
-        {% endfor %}
-    </div>
-{% endif %}
+          <div class="mt-2">
+            <strong style="color:#555;">Tags:</strong>
+            {% for tag in post.tags.all %}
+              <span class="badge bg-secondary">{{ tag.name }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
 
+        {# Barra de ações - Melhorada (com os novos ajustes) #}
+        <div class="action-bar">
+          <div class="action-left">
+            <form method="post" action="{% url 'curtir_post' post.id %}" class="m-0 p-0">
+              {% csrf_token %}
+              <button type="submit"
+                      class="btn-icon btn-like {% if liked_post_ids and post.id in liked_post_ids %}active{% endif %}"
+                      aria-pressed="{% if liked_post_ids and post.id in liked_post_ids %}true{% else %}false{% endif %}"
+                      title="{% if liked_post_ids and post.id in liked_post_ids %}Descurtir{% else %}Curtir{% endif %}">
+                {% if liked_post_ids and post.id in liked_post_ids %}
+                  <i class="bi bi-heart-fill"></i>
+                {% else %}
+                  <i class="bi bi-heart"></i>
+                {% endif %}
+              </button>
+            </form>
 
-        <div class="mt-3">
-          <small class="text-muted">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#curtidasModal{{ post.id }}">{{ post.curtidas.count }} curtida{{ post.curtidas.count|pluralize }}</a> ·
-            <a href="#" data-bs-toggle="modal" data-bs-target="#comentariosModal{{ post.id }}">{{ post.comentarios.count }} comentário{{ post.comentarios.count|pluralize }}</a>
-          </small>
+            <button type="button" class="btn-icon" title="Ver comentários"
+                    data-bs-toggle="modal" data-bs-target="#comentariosModal{{ post.id }}">
+              <i class="bi bi-chat-dots"></i>
+            </button>
+
+            <form method="post" action="{% url 'compartilhar_post' post.id %}" class="m-0 p-0 share-form">
+              {% csrf_token %}
+              <button type="submit" class="btn-icon share-btn" title="Compartilhar"
+                      data-url="{{ request.build_absolute_uri }}#post-{{ post.id }}">
+                <i class="bi bi-share"></i>
+              </button>
+            </form>
+          </div>
+
+          <div class="counter">
+            <a href="#" class="text-decoration-none"
+               data-bs-toggle="modal" data-bs-target="#curtidasModal{{ post.id }}">
+              {{ post.curtidas.count }} curtida{{ post.curtidas.count|pluralize }}
+            </a>
+            <span>•</span>
+            <a href="#" class="text-decoration-none"
+               data-bs-toggle="modal" data-bs-target="#comentariosModal{{ post.id }}">
+              {{ post.comentarios.count }} comentário{{ post.comentarios.count|pluralize }}
+            </a>
+          </div>
         </div>
 
+        {# Prévia dos 4 comentários - Melhorada #}
         {% with total_coment=post.comentarios.all|length %}
           {% if total_coment %}
-            <div class="mt-2">
+            <div class="comment-list">
               {% for comentario in post.comentarios.all|slice:":4" %}
-                <div class="mb-1">
-                  <small>
-                    <strong>{{ comentario.autor.first_name }}</strong>:
-                    {{ comentario.texto|truncatechars:180 }}
-                  </small>
+                <div class="comment-item">
+                  {% if comentario.autor.perfil.foto %}
+                    <img src="{{ comentario.autor.perfil.foto.url }}" class="c-avatar" alt="">
+                  {% else %}
+                    <div class="c-avatar" style="background:#4B0082;"></div>
+                  {% endif %}
+                  <div class="c-content">
+                      <div class="c-meta">
+                          <span class="c-name">{{ comentario.autor.first_name }}</span>
+                          <span class="c-time ms-2">{{ comentario.data|timesince }} atrás</span>
+                      </div>
+                      <div class="c-text">{{ comentario.texto }}</div>
+                  </div>
                 </div>
               {% endfor %}
-
-              {% if total_coment > 4 %}
-                <a href="#" class="small"
-                  data-bs-toggle="modal"
-                  data-bs-target="#comentariosModal{{ post.id }}">
-                </a>
-              {% endif %}
             </div>
+
+            {% if total_coment > 4 %}
+              <a href="#" class="see-all mt-2"
+                 data-bs-toggle="modal" data-bs-target="#comentariosModal{{ post.id }}">
+                  Ver todos os {{ total_coment }} comentários <i class="bi bi-arrow-right-short"></i>
+              </a>
+            {% endif %}
           {% endif %}
         {% endwith %}
 
-        <div class="d-flex align-items-center mt-3 gap-2 flex-wrap">
-          <form method="post" action="{% url 'curtir_post' post.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-danger rounded-circle" style="width: 40px; height: 40px;">
-              <i class="bi bi-heart-fill"></i>
-            </button>
-          </form>
+        {# Campo de comentar (inline) #}
+        <form method="post" action="{% url 'comentar_post' post.id %}" class="comment-inline">
+          {% csrf_token %}
+          <input type="text" name="comentario" class="form-control comment-input" placeholder="Escreva um comentário...">
+          <button type="submit" class="btn btn-send px-4">Enviar</button>
+        </form>
 
-
-          <form method="post" action="{% url 'comentar_post' post.id %}" class="d-flex align-items-center w-100 gap-2">
-            {% csrf_token %}
-            <input type="text" name="comentario" class="form-control rounded-pill" placeholder="Comente...">
-            <button type="submit" class="btn text-white px-3" style="background-color: #4B0082; border-radius: 12px;">Enviar</button>
-          </form>
-          <form method="post" action="{% url 'compartilhar_post' post.id %}" class="d-inline share-form">
-            {% csrf_token %}
-            <button type="submit"
-                    class="btn btn-success d-flex align-items-center gap-2 px-3 share-btn"
-                    data-url="{{ request.build_absolute_uri }}#post-{{ post.id }}">
-              <i class="bi bi-share-fill"></i> Compartilhar
-            </button>
-          </form>
-        </div>
-
-        <div class="modal fade" id="comentariosModal{{ post.id }}" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-scrollable">
+        {# Modal Comentários #}
+        <div class="modal fade modal-elevated" id="comentariosModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title">Comentários</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-              </div>
-              <div class="modal-body">
-                {% for comentario in post.comentarios.all %}
-                <p><strong>{{ comentario.autor.first_name }}</strong>: {{ comentario.texto }}</p>
-                {% empty %}
-                <p class="text-muted">Nenhum comentário ainda.</p>
-                {% endfor %}
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal fade" id="curtidasModal{{ post.id }}" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Curtido por</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                {% for curtida in post.curtidas.all %}
-                <p>{{ curtida.usuario.first_name }}</p>
-                {% empty %}
-                <p class="text-muted">Ninguém curtiu ainda.</p>
-                {% endfor %}
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="modal fade" id="tagsModal{{ post.id }}" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Tags deste Post</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-              </div>
-              <div class="modal-body">
-                {% if post.tags.all|length %}
-
-                  <div class="d-flex flex-wrap gap-2">
-                    {% for tag in post.tags.all %}
-                      <span class="badge bg-secondary">{{ tag.nome }}</span>
-                    {% endfor %}
+                <div>
+                  <h5 class="modal-title">Comentários — {{ post.titulo|default:"Post" }}</h5>
+                  <div class="modal-subtitle">
+                    {{ post.comentarios.count }} comentário{{ post.comentarios.count|pluralize }}
                   </div>
-                {% else %}
-                  <p class="text-muted">Este post não tem tags.</p>
-                {% endif %}
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
               </div>
+
+              <div class="modal-body list-bubbles">
+                {% for comentario in post.comentarios.all %}
+                  <div class="item">
+                    {% if comentario.autor.perfil.foto %}
+                      <img src="{{ comentario.autor.perfil.foto.url }}" class="avatar" alt="">
+                    {% else %}
+                      <div class="avatar" style="background:#4B0082;"></div>
+                    {% endif %}
+                    <div class="bubble">
+                      <div class="meta">
+                        <span class="name">{{ comentario.autor.first_name }}</span>
+                        <span class="time">{{ comentario.data|timesince }} atrás</span>
+                      </div>
+                      <div class="mt-1">{{ comentario.texto }}</div>
+                    </div>
+                  </div>
+                {% empty %}
+                  <p class="text-muted mb-0">Nenhum comentário ainda.</p>
+                {% endfor %}
+              </div>
+
+              <form method="post" action="{% url 'comentar_post' post.id %}">
+                {% csrf_token %}
+                <div class="modal-footer input-footer">
+                  <input type="text" name="comentario" class="form-control" placeholder="Escreva um comentário..." />
+                  <button type="submit" class="btn btn-send px-4">Enviar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {# Modal Curtidas – igual ao de comentários (lista em bubbles) #}
+        <div class="modal fade modal-elevated" id="curtidasModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <div>
+                  <h5 class="modal-title">Curtidas — {{ post.titulo|default:"Post" }}</h5>
+                  <div class="modal-subtitle">
+                    {{ post.curtidas.count }} curtida{{ post.curtidas.count|pluralize }}
+                  </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+              </div>
+
+              <div class="modal-body list-bubbles">
+                {% for curtida in post.curtidas.all %}
+                  <div class="item">
+                    {% if curtida.usuario.perfil.foto %}
+                      <img src="{{ curtida.usuario.perfil.foto.url }}" class="avatar" alt="">
+                    {% else %}
+                      <div class="avatar" style="background:#4B0082;"></div>
+                    {% endif %}
+                    <div class="bubble">
+                      <div class="meta">
+                        <span class="name">{{ curtida.usuario.first_name }}</span>
+                        {% if curtida.data %}
+                          <span class="time">{{ curtida.data|timesince }} atrás</span>
+                        {% endif %}
+                      </div>
+                      {# Removido: <div class="mt-1 text-muted">Curtiu esta publicação</div> #}
+                    </div>
+                  </div>
+                {% empty %}
+                  <p class="text-muted mb-0">Ninguém curtiu ainda.</p>
+                {% endfor %}
+              </div>
+
               <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
               </div>
             </div>
           </div>
         </div>
-
-
 
         <div class="text-end mt-2">
           <small class="text-muted">{{ post.data_criacao }}</small>
@@ -309,34 +450,25 @@
   <nav aria-label="Navegação da página">
     <ul class="pagination justify-content-center">
       {% if posts.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ posts.previous_page_number }}" style="color: #4B0082;">Anterior</a>
-      </li>
+        <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">Anterior</a></li>
       {% endif %}
-
       {% for i in posts.paginator.page_range %}
-      {% if posts.number == i %}
-      <li class="page-item active" aria-current="page">
-        <span class="page-link" style="background-color: #4B0082; border-color: #4B0082; color: white;">{{ i }}</span>
-      </li>
-      {% elif i > posts.number|add:'-3' and i < posts.number|add:'3' %}
-      <li class="page-item"><a class="page-link" href="?page={{ i }}" style="color: #4B0082;">{{ i }}</a></li>
-      {% endif %}
+        {% if posts.number == i %}
+          <li class="page-item active" aria-current="page"><span class="page-link">{{ i }}</span></li>
+        {% elif i > posts.number|add:'-3' and i < posts.number|add:'3' %}
+          <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
       {% endfor %}
-
       {% if posts.has_next %}
-      <li class="page-item">
-        <a class="page-link" href="?page={{ posts.next_page_number }}" style="color: #4B0082;">Próximo</a>
-      </li>
+        <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}">Próximo</a></li>
       {% endif %}
     </ul>
   </nav>
   {% endif %}
-
 </div>
 
 <div class="offcanvas offcanvas-end offcanvas-custom" tabindex="-1" id="sidebarPerfil" aria-labelledby="sidebarPerfilLabel" style="width: 280px;">
-  <div class="offcanvas-header border-bottom">
+  <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="sidebarPerfilLabel">Minha Conta</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
   </div>
@@ -361,57 +493,34 @@
       </button>
     </form>
 
-    <div class="mt-auto text-center small">
-      STEMA © {{ now|date:"Y" }}
-    </div>
+    <div class="mt-auto text-center small">STEMA © {{ now|date:"Y" }}</div>
   </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script>
-    document.querySelectorAll('.share-form').forEach(form => {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = form.querySelector('.share-btn');
-        const url = btn.dataset.url;
-        if (navigator.share) {
-          try {
-            await navigator.share({
-              title: document.title,
-              text: 'Dá uma olhada neste post na Comunidade!',
-              url: url
-            });
-          } catch (err) {
-            console.error('Erro ao compartilhar:', err);
-          }
-        } else {
-          try {
-            await navigator.clipboard.writeText(url);
-            alert('Link copiado para a área de transferência!');
-          } catch (err) {
-            console.error('Erro ao copiar link:', err);
-            alert('Não foi possível copiar o link automaticamente, copie manualmente: ' + url);
-          }
-        }
-        form.submit();
-      });
-    });
-  </script>
-  <script>
+<script>
+  // Mostrar/ocultar botão flutuante
   const floatBtn = document.getElementById('floatingBtn');
+  window.addEventListener('scroll', () => {
+    floatBtn.style.display = window.scrollY > 150 ? 'flex' : 'none';
+  });
 
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 150) {
-        floatBtn.style.display = 'flex';
+  // Compartilhar: Web Share API + fallback copiar link
+  document.querySelectorAll('.share-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('.share-btn');
+      const url = btn.dataset.url;
+      if (navigator.share) {
+        try { await navigator.share({ title: document.title, text: 'Dá uma olhada neste post na Comunidade!', url }); }
+        catch (err) { console.error('Erro ao compartilhar:', err); }
       } else {
-      floatBtn.style.display = 'none';
+        try { await navigator.clipboard.writeText(url); alert('Link copiado para a área de transferência!'); }
+        catch (err) { console.error('Erro ao copiar link:', err); alert('Não foi possível copiar o link automaticamente, copie manualmente: ' + url); }
       }
+      form.submit();
     });
-  </script>
-
-  </body>
+  });
+</script>
+</body>
 </html>

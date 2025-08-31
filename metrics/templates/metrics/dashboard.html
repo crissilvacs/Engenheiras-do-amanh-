@@ -32,217 +32,306 @@
         .btn-purple { background-color: #4B0082; color: white; border: none; }
         .btn-purple:hover { background-color: #5d04a6; color: white; }
         .text-purple { color: #4B0082; }
+
+        /* Navbar + avatar */
+        .brand-logo { width: auto; height: 50px; object-fit: contain; display: block; }
+        .logo-circle { width: 50px; height: 50px; background-color: #4B0082; border-radius: 50%; margin-right: 10px; }
+        .nav-link.active { font-weight: bold; color: #4B0082 !important; }
+
+        /* Sidebar (ajustada para o visual da imagem) */
+        .offcanvas-custom { width: 280px !important; } /* Ajuste de largura */
+        .offcanvas-header, .offcanvas-body { padding: 16px; }
+        .offcanvas-header { border-bottom: 1px solid #eef0f4; }
+        .offcanvas-title { font-weight: 700; }
+        
+        .btn-outline-purple {
+            border: none;
+            color: #212529; 
+            transition: all 0.2s ease;
+            text-align: left;
+            padding-left: 0;
+            background-color: transparent;
+            font-weight: 500;
+        }
+        .btn-outline-purple:focus {
+            box-shadow: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <div class="dashboard-header text-center">
-            <h1 class="fw-bold mb-0 text-purple">Dashboard de Métricas</h1>
-            <p class="text-muted">Análise de uso e engajamento do sistema</p>
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center gap-2">
+            <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
+            <a href="{% url 'pagina_inicial' %}" class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Ciência e Tecnologia para Mulheres</a>
         </div>
 
-        <div class="metric-card mb-4">
-            <h2 class="mb-3 text-purple">Filtrar Dados</h2>
-            <form method="get" action="{% url 'metrics:dashboard' %}" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label for="periodo" class="form-label">Período Predefinido</label>
-                    <select id="periodo" name="periodo" class="form-select">
-                        <option value="7dias" {% if periodo_selecionado == '7dias' %}selected{% endif %}>Últimos 7 dias</option>
-                        <option value="30dias" {% if periodo_selecionado == '30dias' %}selected{% endif %}>Últimos 30 dias</option>
-                        <option value="custom" {% if periodo_selecionado == 'custom' %}selected{% endif %}>Personalizado</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label for="data_inicio" class="form-label">Data de Início</label>
-                    <input type="date" id="data_inicio" name="data_inicio" class="form-control" value="{{ data_inicio }}">
-                </div>
-                <div class="col-md-3">
-                    <label for="data_fim" class="form-label">Data de Fim</label>
-                    <input type="date" id="data_fim" name="data_fim" class="form-control" value="{{ data_fim }}">
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-purple w-100">Aplicar Filtro</button>
-                </div>
-            </form>
-        </div>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                <form method="post" action="{% url 'logout' %}" class="d-inline">{% csrf_token %}</form>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'pagina_inicial' %}">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'ranking' %}">Ranking</a></li>
+            
+            {% if request.user.is_superuser %}
+                <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
+                <li class="nav-item"><a class="nav-link active" href="{% url 'metrics:dashboard' %}">Métricas</a></li>
+            {% endif %}
+        </ul>
 
-        <div class="row">
-            <div class="col-md-2 mb-4">
-                <div class="metric-card">
-                    <h2 class="text-muted">Acessos</h2>
-                    <p>{{ pageviews_card }}</p>
-                    <small class="text-muted">Período</small>
-                    <hr class="text-muted">
-                    <p>{{ total_pageviews_geral }}</p>
-                    <small class="text-muted">Total</small>
-                </div>
-            </div>
-            <div class="col-md-2 mb-4">
-                <div class="metric-card">
-                    <h2 class="text-muted">Posts</h2>
-                    <p>{{ posts_card }}</p>
-                    <small class="text-muted">Período</small>
-                    <hr class="text-muted">
-                    <p>{{ total_posts_geral }}</p>
-                    <small class="text-muted">Total</small>
-                </div>
-            </div>
-            <div class="col-md-2 mb-4">
-                <div class="metric-card">
-                    <h2 class="text-muted">Curtidas</h2>
-                    <p>{{ likes_card }}</p>
-                    <small class="text-muted">Período</small>
-                    <hr class="text-muted">
-                    <p>{{ total_likes_geral }}</p>
-                    <small class="text-muted">Total</small>
-                </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="metric-card">
-                    <h2 class="text-muted">Comentários</h2>
-                    <p>{{ comments_card }}</p>
-                    <small class="text-muted">Período</small>
-                    <hr class="text-muted">
-                    <p>{{ total_comments_geral }}</p>
-                    <small class="text-muted">Total</small>
-                </div>
-            </div>
-            <div class="col-md-3 mb-4">
-                <div class="metric-card">
-                    <h2 class="text-muted">Usuários</h2>
-                    <p>{{ users_card }}</p>
-                    <small class="text-muted">Novos no período</small>
-                    <hr class="text-muted">
-                    <p>{{ total_users_geral }}</p>
-                    <small class="text-muted">Total</small>
-                </div>
-            </div>
-        </div>
+        {% if request.user.perfil.foto %}
+            <img src="{{ request.user.perfil.foto.url }}"
+                 class="rounded-circle"
+                 style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
+                 data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil">
+        {% else %}
+            <div class="logo-circle"
+                 data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil"
+                 style="cursor: pointer;"></div>
+        {% endif %}
+    </div>
+</nav>
 
-        <div class="row">
-            <div class="col-md-6 mb-4">
-                <div class="chart-container">
-                    <h2 class="mb-3">Acessos por Dia</h2>
-                    <canvas id="pageViewsChart"></canvas>
-                </div>
-            </div>
-            <div class="col-md-6 mb-4">
-                <div class="chart-container">
-                    <h2 class="mb-3">Ações por Tipo</h2>
-                    <canvas id="actionsChart"></canvas>
-                </div>
-            </div>
-        </div>
+<div class="container mt-4">
+    <div class="dashboard-header text-center">
+        <h1 class="fw-bold mb-0 text-purple">Dashboard de Métricas</h1>
+        <p class="text-muted">Análise de uso e engajamento do sistema</p>
+    </div>
 
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="chart-container">
-                    <h2 class="mb-3">Últimos 50 Acessos</h2>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Usuário</th>
-                                    <th>Caminho</th>
-                                    <th>Método</th>
-                                    <th>Timestamp</th>
-                                    <th>IP</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for pv in recent_pageviews %}
-                                <tr>
-                                    <td>{{ pv.user.username|default:"Anônimo" }}</td>
-                                    <td>{{ pv.path }}</td>
-                                    <td>{{ pv.method }}</td>
-                                    <td>{{ pv.timestamp|date:"d/m/Y H:i:s" }}</td>
-                                    <td>{{ pv.ip_address|default:"N/A" }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="5" class="text-center">Nenhum acesso registrado.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="metric-card mb-4">
+        <h2 class="mb-3 text-purple">Filtrar Dados</h2>
+        <form method="get" action="{% url 'metrics:dashboard' %}" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="periodo" class="form-label">Período Predefinido</label>
+                <select id="periodo" name="periodo" class="form-select">
+                    <option value="7dias" {% if periodo_selecionado == '7dias' %}selected{% endif %}>Últimos 7 dias</option>
+                    <option value="30dias" {% if periodo_selecionado == '30dias' %}selected{% endif %}>Últimos 30 dias</option>
+                    <option value="custom" {% if periodo_selecionado == 'custom' %}selected{% endif %}>Personalizado</option>
+                </select>
             </div>
-        </div>
+            <div class="col-md-3">
+                <label for="data_inicio" class="form-label">Data de Início</label>
+                <input type="date" id="data_inicio" name="data_inicio" class="form-control" value="{{ data_inicio }}">
+            </div>
+            <div class="col-md-3">
+                <label for="data_fim" class="form-label">Data de Fim</label>
+                <input type="date" id="data_fim" name="data_fim" class="form-control" value="{{ data_fim }}">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-purple w-100">Aplicar Filtro</button>
+            </div>
+        </form>
+    </div>
 
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="chart-container">
-                    <h2 class="mb-3">Últimas 50 Ações</h2>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Usuário</th>
-                                    <th>Tipo de Ação</th>
-                                    <th>Timestamp</th>
-                                    <th>Objeto</th>
-                                    <th>Detalhes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for action in recent_actions %}
-                                <tr>
-                                    <td>{{ action.user.username|default:"Anônimo" }}</td>
-                                    <td>{{ action.action_type }}</td>
-                                    <td>{{ action.timestamp|date:"d/m/Y H:i:s" }}</td>
-                                    <td>{{ action.content_object|default:"N/A" }}</td>
-                                    <td>{{ action.details|default:"N/A" }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="5" class="text-center">Nenhuma ação registrada.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+    <div class="row">
+        <div class="col-md-2 mb-4">
+            <div class="metric-card">
+                <h2 class="text-muted">Acessos</h2>
+                <p>{{ pageviews_card }}</p>
+                <small class="text-muted">Período</small>
+                <hr class="text-muted">
+                <p>{{ total_pageviews_geral }}</p>
+                <small class="text-muted">Total</small>
+            </div>
+        </div>
+        <div class="col-md-2 mb-4">
+            <div class="metric-card">
+                <h2 class="text-muted">Posts</h2>
+                <p>{{ posts_card }}</p>
+                <small class="text-muted">Período</small>
+                <hr class="text-muted">
+                <p>{{ total_posts_geral }}</p>
+                <small class="text-muted">Total</small>
+            </div>
+        </div>
+        <div class="col-md-2 mb-4">
+            <div class="metric-card">
+                <h2 class="text-muted">Curtidas</h2>
+                <p>{{ likes_card }}</p>
+                <small class="text-muted">Período</small>
+                <hr class="text-muted">
+                <p>{{ total_likes_geral }}</p>
+                <small class="text-muted">Total</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="metric-card">
+                <h2 class="text-muted">Comentários</h2>
+                <p>{{ comments_card }}</p>
+                <small class="text-muted">Período</small>
+                <hr class="text-muted">
+                <p>{{ total_comments_geral }}</p>
+                <small class="text-muted">Total</small>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="metric-card">
+                <h2 class="text-muted">Usuários</h2>
+                <p>{{ users_card }}</p>
+                <small class="text-muted">Novos no período</small>
+                <hr class="text-muted">
+                <p>{{ total_users_geral }}</p>
+                <small class="text-muted">Total</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h2 class="mb-3">Acessos por Dia</h2>
+                <canvas id="pageViewsChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="chart-container">
+                <h2 class="mb-3">Ações por Tipo</h2>
+                <canvas id="actionsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="chart-container">
+                <h2 class="mb-3">Últimos 50 Acessos</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Caminho</th>
+                                <th>Método</th>
+                                <th>Timestamp</th>
+                                <th>IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pv in recent_pageviews %}
+                            <tr>
+                                <td>{{ pv.user.username|default:"Anônimo" }}</td>
+                                <td>{{ pv.path }}</td>
+                                <td>{{ pv.method }}</td>
+                                <td>{{ pv.timestamp|date:"d/m/Y H:i:s" }}</td>
+                                <td>{{ pv.ip_address|default:"N/A" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center">Nenhum acesso registrado.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <div class="row mt-4">
-            <div class="col-md-12">
-                <div class="chart-container">
-                    <h2 class="mb-3">Prévia do CSV de Métricas Diárias</h2>
-                    <div id="csv-preview-container" class="table-responsive">
-                        {% if csv_preview_data %}
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Acessos</th>
-                                    <th>Posts</th>
-                                    <th>Curtidas</th>
-                                    <th>Comentários</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in csv_preview_data %}
-                                <tr>
-                                    <td>{{ row.Data }}</td>
-                                    <td>{{ row.Acessos }}</td>
-                                    <td>{{ row.Posts }}</td>
-                                    <td>{{ row.Curtidas }}</td>
-                                    <td>{{ row.Comentários }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        {% else %}
-                        <p class="text-center text-muted">Nenhum dado encontrado para o período.</p>
-                        {% endif %}
-                    </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="chart-container">
+                <h2 class="mb-3">Últimas 50 Ações</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Tipo de Ação</th>
+                                <th>Timestamp</th>
+                                <th>Objeto</th>
+                                <th>Detalhes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for action in recent_actions %}
+                            <tr>
+                                <td>{{ action.user.username|default:"Anônimo" }}</td>
+                                <td>{{ action.action_type }}</td>
+                                <td>{{ action.timestamp|date:"d/m/Y H:i:s" }}</td>
+                                <td>{{ action.content_object|default:"N/A" }}</td>
+                                <td>{{ action.details|default:"N/A" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center">Nenhuma ação registrada.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-<p class="text-center mt-4 d-flex justify-content-center gap-3">
-    <a href="#" id="export-csv-btn" class="btn btn-purple">Exportar Métricas (CSV)</a>
-</p>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="chart-container">
+                <h2 class="mb-3">Prévia do CSV de Métricas Diárias</h2>
+                <div id="csv-preview-container" class="table-responsive">
+                    {% if csv_preview_data %}
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Acessos</th>
+                                <th>Posts</th>
+                                <th>Curtidas</th>
+                                <th>Comentários</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in csv_preview_data %}
+                            <tr>
+                                <td>{{ row.Data }}</td>
+                                <td>{{ row.Acessos }}</td>
+                                <td>{{ row.Posts }}</td>
+                                <td>{{ row.Curtidas }}</td>
+                                <td>{{ row.Comentários }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-center text-muted">Nenhum dado encontrado para o período.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center mt-4 d-flex justify-content-center gap-3">
+        <a href="#" id="export-csv-btn" class="btn btn-purple">Exportar Métricas (CSV)</a>
+    </p>
+</div>
+
+<div class="offcanvas offcanvas-end offcanvas-custom" tabindex="-1" id="sidebarPerfil" aria-labelledby="sidebarPerfilLabel">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title" id="sidebarPerfilLabel">Minha Conta</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column gap-3 px-3">
+    <div class="text-center mt-3 mb-4">
+      {% if request.user.perfil.foto %}
+        <img src="{{ request.user.perfil.foto.url }}" class="rounded-circle shadow" style="width: 80px; height: 80px; object-fit: cover;">
+      {% else %}
+        <div class="logo-circle mx-auto" style="width: 80px; height: 80px;"></div>
+      {% endif %}
+      <p class="mt-2 fw-semibold">{{ user.first_name }}</p>
+    </div>
+
+    <a href="{% url 'perfil' %}" class="btn btn-outline-purple d-flex align-items-center gap-2 w-100">
+      <i class="bi bi-person-circle"></i> Perfil
+    </a>
+
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-purple d-flex align-items-center gap-2 w-100">
+        <i class="bi bi-box-arrow-right"></i> Sair
+      </button>
+    </form>
+
+    <div class="mt-auto text-center small">
+      STEMA &copy; {{ now|date:"Y" }}
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -253,55 +342,40 @@
         const dataFimInput = document.getElementById('data_fim');
 
         function toggleDateInputs() {
-            if (periodoSelect.value !== 'custom') {
-                dataInicioInput.disabled = true;
-                dataFimInput.disabled = true;
-            } else {
-                dataInicioInput.disabled = false;
-                dataFimInput.disabled = false;
-            }
+            const isCustom = periodoSelect.value === 'custom';
+            dataInicioInput.disabled = !isCustom;
+            dataFimInput.disabled = !isCustom;
         }
 
         periodoSelect.addEventListener('change', toggleDateInputs);
-        if (periodoSelect.value !== 'custom') {
-            dataInicioInput.disabled = true;
-            dataFimInput.disabled = true;
-        } else {
-            dataInicioInput.disabled = false;
-            dataFimInput.disabled = false;
-        }
-        
-        // --- CÓDIGO CORRIGIDO DO BOTÃO DE EXPORTAÇÃO ---
+        toggleDateInputs();
+
+        // Botão de exportação (mantido)
         const exportBtn = document.getElementById('export-csv-btn');
         exportBtn.addEventListener('click', function(e) {
             e.preventDefault();
             const periodoSelecionado = document.getElementById('periodo').value;
             let dataInicio, dataFim;
-            
-            // Calcula as datas de acordo com o período selecionado
             const hoje = new Date();
+
             if (periodoSelecionado === '7dias') {
-                const inicio = new Date(hoje);
-                inicio.setDate(hoje.getDate() - 6);
+                const inicio = new Date(hoje); inicio.setDate(hoje.getDate() - 6);
                 dataInicio = inicio.toISOString().slice(0, 10);
                 dataFim = hoje.toISOString().slice(0, 10);
             } else if (periodoSelecionado === '30dias') {
-                const hoje = new Date();
-                const inicio = new Date();
-                inicio.setDate(hoje.getDate() - 29);
+                const inicio = new Date(hoje); inicio.setDate(hoje.getDate() - 29);
                 dataInicio = inicio.toISOString().slice(0, 10);
                 dataFim = hoje.toISOString().slice(0, 10);
             } else {
                 dataInicio = dataInicioInput.value;
                 dataFim = dataFimInput.value;
             }
-            
-            // Constrói e navega para o URL de exportação
+
             const url = `{% url "metrics:export_csv" %}?data_inicio=${dataInicio}&data_fim=${dataFim}`;
             window.location.href = url;
         });
-        // --- FIM DO CÓDIGO CORRIGIDO ---
 
+        // Gráficos
         const pageViewsCtx = document.getElementById('pageViewsChart').getContext('2d');
         const pageviewsLabelsJson = '{{ pageviews_labels_json|safe }}';
         const pageviewsDataJson = '{{ pageviews_data_json|safe }}';
@@ -321,13 +395,8 @@
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { mode: 'index', intersect: false }
-                },
-                scales: {
-                    y: { beginAtZero: true, grid: { display: false } }
-                }
+                plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+                scales: { y: { beginAtZero: true, grid: { display: false } } }
             }
         });
 
@@ -348,12 +417,8 @@
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    y: { beginAtZero: true, grid: { display: false } }
-                }
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, grid: { display: false } } }
             }
         });
     });

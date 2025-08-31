@@ -12,7 +12,6 @@
     .nav-link.active { font-weight: bold; color: #4B0082 !important; }
     .brand-logo { width: auto; height: 50px; object-fit: contain; display: block; }
 
-    /* Wrapper fixo p/ evitar "pulo" ao trocar imagem */
     .avatar-wrapper{
       width:130px; height:130px; margin:0 auto 12px;
       position:relative;
@@ -37,7 +36,7 @@
   <div class="container-fluid">
     <div class="d-flex align-items-center gap-2">
       <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
-      <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Sua Comunidade de Extensão</span>
+      <a href="{% url 'pagina_inicial' %}" class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Ciência e Tecnologia para Mulheres</a>
     </div>
 
     <ul class="navbar-nav ms-auto">
