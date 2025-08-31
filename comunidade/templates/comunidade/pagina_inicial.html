@@ -163,34 +163,67 @@
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
-  <div class="container-fluid">
-    <div class="d-flex align-items-center gap-2">
-      <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
-      <a href="{% url 'pagina_inicial' %}" class="navbar-brand fw-bold text-uppercase text-dark mb-0">STEMA — Ciência e Tecnologia para Mulheres</a>
+
+<!-- Navbar Responsiva -->
+<nav class="navbar navbar-expand-lg bg-white shadow-sm px-3 fixed-top">
+    <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'pagina_inicial' %}">
+            <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo me-2">
+            <span class="navbar-brand-text">
+                STEMA <span class="d-none d-sm-inline">— Ciência e Tecnologia para Mulheres</span>
+            </span>
+        </a>
+
+        <!-- Botão Hamburger (só aparece em telas pequenas) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Itens da Navbar (que colapsam) -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'pagina_inicial' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ranking' %}">Ranking</a>
+                </li>
+                
+                {% if request.user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/">Admin</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'metrics:dashboard' %}">Métricas</a>
+                </li>
+                {% endif %}
+
+                <!-- Foto de Perfil (APENAS para ecrãs grandes/desktop) -->
+                <li class="nav-item ms-lg-3 d-none d-lg-block">
+                    {% if perfil.foto %}
+                        <img src="{{ perfil.foto.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil">
+                    {% else %}
+                        <div style="width: 40px; height: 40px; background-color: #4B0082; border-radius: 50%; cursor: pointer;" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil"></div>
+                    {% endif %}
+                </li>
+
+                <!-- Divisor (APENAS para o menu de telemóvel) -->
+                <li class="nav-item d-lg-none"><hr class="dropdown-divider"></li>
+
+                <!-- Link de Perfil (APENAS para o menu de telemóvel) -->
+                <li class="nav-item d-lg-none">
+                    <a class="nav-link" href="{% url 'perfil' %}">Perfil</a>
+                </li>
+                <!-- Link de Sair (APENAS para o menu de telemóvel) -->
+                <li class="nav-item d-lg-none">
+                    <a class="nav-link" href="{% url 'account_logout' %}">Sair</a>
+                </li>
+            </ul>
+        </div>
     </div>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item">
-        <form method="post" action="{% url 'logout' %}" class="d-inline">{% csrf_token %}</form>
-      </li>
-      <li class="nav-item"><a class="nav-link active" href="{% url 'pagina_inicial' %}">Home</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'ranking' %}">Ranking</a></li>
-
-      {# Condição para exibir links de Admin e Métricas #}
-      {% if request.user.is_superuser %}
-        <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'metrics:dashboard' %}">Métricas</a></li>
-      {% endif %}
-
-    </ul>
-
-    {% if perfil.foto %}
-      <img src="{{ perfil.foto.url }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil">
-    {% else %}
-      <div class="logo-circle" data-bs-toggle="offcanvas" data-bs-target="#sidebarPerfil" aria-controls="sidebarPerfil" style="cursor: pointer;"></div>
-    {% endif %}
-  </div>
 </nav>
+
 
 <div class="container mt-5">
   <div class="text-center mb-4">
