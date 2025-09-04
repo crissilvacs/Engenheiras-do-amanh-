@@ -3,6 +3,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 🔑 Responsividade -->
     <title>Redefinição de senha</title>
 
     <!-- Bootstrap 5 CDN -->
@@ -15,22 +16,16 @@
             font-family: Arial, sans-serif;
         }
 
-        .brand-logo { width: auto;
+        .brand-logo { 
+            width: auto;
             height: 50px; 
             object-fit: contain; 
-            display: block;}
-
-        .circle {
-            width: 60px;
-            height: 60px;
-            background-color: white;
-            border-radius: 50%;
-            margin-right: 20px;
+            display: block;
         }
 
         .brand-title {
             color: #4B0082;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: bold;
         }
 
@@ -40,7 +35,8 @@
             border-radius: 12px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             max-width: 400px;
-            margin-top: 60px;
+            width: 100%; /* 🔑 Faz ocupar a largura no mobile */
+            margin-top: 40px;
         }
 
         .btn-purple {
@@ -62,6 +58,25 @@
         .login-link span {
             color: red;
         }
+
+        /* 🔑 Ajustes para telas menores */
+        @media (max-width: 576px) {
+            .brand-title {
+                font-size: 16px;
+                text-align: center;
+            }
+            .brand-logo {
+                height: 40px;
+            }
+            .container.py-3 .d-flex {
+                flex-direction: column;
+                text-align: center;
+            }
+            .form-box {
+                padding: 25px;
+                margin-top: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -73,7 +88,6 @@
             <span class="brand-title">STEMA — Ciência e Tecnologia para Mulheres</span>
         </div>
     </div>
-
 
     <!-- Formulário -->
     <div class="container d-flex justify-content-center">
