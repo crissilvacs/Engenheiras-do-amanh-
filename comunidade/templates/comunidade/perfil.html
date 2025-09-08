@@ -3,10 +3,13 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <!-- Essencial para responsividade real -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Perfil - STEMA</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
+    html, body { max-width: 100%; overflow-x: hidden; } /* evita scroll lateral no mobile */
     body { background-color: #f1f2f6; padding-top: 70px; }
     .logo-circle { width: 50px; height: 50px; background-color: #4B0082; border-radius: 50%; margin-right: 10px; }
     .nav-link.active { font-weight: bold; color: #4B0082 !important; }
@@ -30,9 +33,7 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       transform: translateY(-3px);
     }
-    .btn-edit-profile i {
-      margin-right: 8px;
-    }
+    .btn-edit-profile i { margin-right: 8px; }
 
     .avatar-topo {
       width: 40px;
@@ -41,6 +42,46 @@
       object-fit: cover;
       margin-left: 10px;
       cursor: pointer;
+    }
+
+    /* =================== Responsividade (sem mudar design no desktop) =================== */
+    @media (max-width: 992px) {
+      /* melhora respirabilidade geral em tablets */
+      .container { padding-left: 16px; padding-right: 16px; }
+    }
+
+    @media (max-width: 768px) {
+      /* bloco principal do perfil: garante alinhamento e espaçamento confortável */
+      .bg-white.p-4.rounded.shadow-sm.mb-4 .row.align-items-center {
+        row-gap: 16px;
+      }
+      /* estatísticas quebram linha com bom espaçamento */
+      .bg-white .mt-3.d-flex.gap-4 {
+        flex-wrap: wrap;
+        gap: 12px 16px; /* row-gap e column-gap */
+      }
+    }
+
+    @media (max-width: 576px) {
+      /* centraliza avatar e evita overflow */
+      .profile-avatar {
+        display: inline-block;
+        width: 120px;
+        height: 120px;
+      }
+      .bg-white.p-4.rounded.shadow-sm.mb-4 { padding: 16px; }
+
+      /* textos longos não vazam dos cards */
+      .post-card h6, .post-card p { word-break: break-word; }
+
+      /* botão de editar ocupa largura total para toque mais fácil */
+      .btn-edit-profile { width: 100%; }
+
+      /* alivia margens dos cards no mobile */
+      .post-card { border-radius: 16px; }
+
+      /* corrige padding para não “pender” para a direita em telas estreitas */
+      .container, .container-fluid { padding-left: 12px; padding-right: 12px; }
     }
   </style>
 </head>
@@ -116,9 +157,9 @@
     <div class="row align-items-center">
       <div class="col-md-3 text-center">
         {% if perfil.foto %}
-          <img src="{{ perfil.foto.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Foto de perfil">
+          <img src="{{ perfil.foto.url }}" class="rounded-circle mb-3 profile-avatar" width="120" height="120" alt="Foto de perfil">
         {% else %}
-          <div class="rounded-circle bg-secondary mb-3" style="width: 120px; height: 120px;"></div>
+          <div class="rounded-circle bg-secondary mb-3 profile-avatar" style="width: 120px; height: 120px;"></div>
         {% endif %}
       </div>
       <div class="col-md-9">

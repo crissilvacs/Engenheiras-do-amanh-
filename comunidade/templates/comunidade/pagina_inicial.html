@@ -28,13 +28,13 @@
     .post-image{ border-radius: 12px; overflow: hidden; }
     .post-img{ width: 100%; max-height: 420px; object-fit: contain; }
 
-    /* Barra de ações - Melhorada (novos ajustes) */
+    /* Barra de ações */
     .action-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px; /* Reduzido o gap */
-        padding: 8px 12px; /* Reduzido o padding */
+        gap: 10px;
+        padding: 8px 12px;
         background: #fafafa;
         border: 1px solid #eee;
         border-radius: 14px;
@@ -43,15 +43,15 @@
     .action-left {
         display: flex;
         align-items: center;
-        gap: 8px; /* Reduzido o gap */
+        gap: 8px;
     }
     .btn-icon {
-        width: 40px; /* Ajustado para 40px */
-        height: 40px; /* Ajustado para 40px */
+        width: 40px;
+        height: 40px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 999px; /* Totalmente circular */
+        border-radius: 999px;
         border: 1px solid #e5e7eb;
         background: #fff;
         color: #6b7280;
@@ -60,10 +60,10 @@
     .btn-icon:hover { background: #f3f4f6; color: #4B0082; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     .counter { 
         color: #667085; 
-        font-size: .85rem; /* Ajustado o tamanho da fonte */
+        font-size: .85rem;
         display: flex; 
         align-items: center; 
-        gap: 5px; /* Reduzido o gap */
+        gap: 5px;
     }
     .counter a {
         color: #667085;
@@ -74,7 +74,7 @@
         color: #4B0082;
     }
 
-    /* Like ativo (coração preenchido) */
+    /* Like ativo */
     .btn-like { color: #e11d48; }
     .btn-like.active {
         background: #ffe4ea;
@@ -84,56 +84,21 @@
     }
     .btn-like .bi{ color: currentColor; }
 
-    /* Prévia dos 4 comentários - Melhorada */
-    .comment-list {
-      margin-top: 1rem;
-      border-radius: 12px;
-    }
-    .comment-item {
-        display: flex;
-        gap: 12px;
-        padding: 10px 0;
-    }
-    .comment-item + .comment-item {
-        border-top: 1px dashed #e5e7eb;
-    }
-    .c-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-        flex-shrink: 0;
-    }
-    .c-content {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-    }
-    .c-meta {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .c-name {
-        font-weight: 600;
-        color: #333;
-        font-size: 0.95rem;
-    }
-    .c-time {
-        font-size: .8rem;
-        color: #9aa0a6;
-    }
-    .c-text {
-        font-size: 0.9rem;
-        color: #555;
-        margin-top: 4px;
-        line-height: 1.4;
-    }
+    /* Comentários (prévia) */
+    .comment-list { margin-top: 1rem; border-radius: 12px; }
+    .comment-item { display: flex; gap: 12px; padding: 10px 0; }
+    .comment-item + .comment-item { border-top: 1px dashed #e5e7eb; }
+    .c-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+    .c-content { display: flex; flex-direction: column; flex-grow: 1; }
+    .c-meta { display: flex; justify-content: space-between; align-items: center; }
+    .c-name { font-weight: 600; color: #333; font-size: 0.95rem; }
+    .c-time { font-size: .8rem; color: #9aa0a6; }
+    .c-text { font-size: 0.9rem; color: #555; margin-top: 4px; line-height: 1.4; }
 
     .see-all { color: #6a1b9a; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
     .see-all:hover { text-decoration: underline; }
 
-    /* Form de comentar (linha) */
+    /* Comentar (inline) */
     .comment-inline{ display:flex; align-items:center; gap:10px; margin-top:10px; }
     .comment-inline .comment-input{
       flex:1; border-radius:999px; padding:10px 14px; background:#f8f9fb; border:1px solid #e5e7eb;
@@ -142,7 +107,7 @@
     .comment-inline .btn-send{ border-radius:999px; background:#4B0082; color:#fff; }
     .comment-inline .btn-send:hover{ background:#883dce; }
 
-    /* Modais (comentários & curtidas) – mesmo estilo */
+    /* Modais */
     .modal-elevated .modal-content{ border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,.18); border:0; }
     .modal-elevated .modal-header{ border-bottom:1px solid #eef0f4; }
     .modal-elevated .modal-title{ font-weight:700; }
@@ -160,6 +125,50 @@
     .modal-footer.input-footer .form-control{ border-radius:999px; background:#f8f9fb; }
     .modal-footer.input-footer .btn-send{ background:#4B0082; color:#fff; border-radius:999px; }
     .modal-footer.input-footer .btn-send:hover{ background:#883dce; }
+
+    /* ===================== RESPONSIVIDADE (apenas mobile/tablet; desktop intacto) ===================== */
+    html, body { max-width: 100%; overflow-x: hidden; } /* evita “puxão” lateral */
+
+    @media (max-width: 576px){
+      /* Tipografia e espaçamento mais equilibrados */
+      h4.text-purple { font-size: 1.25rem; line-height: 1.3; }
+      .text-center.mb-4 p { margin-bottom: 0; color: #6b7280; }
+
+      /* Barra de busca: 100% no mobile, mesma aparência */
+      .input-group.w-50 { width: 100% !important; }
+
+      /* Cards centralizados e com respiro */
+      .post-card { margin-left: auto; margin-right: auto; padding: 1.0rem 1rem; }
+
+      /* Imagens: altura mais confortável no celular */
+      .post-img{ max-height: 300px; }
+
+      /* Embeds do YouTube: aproveita largura total no mobile */
+      .ratio.ratio-16x9 { width: 100%; max-width: 100% !important; }
+
+      /* Barra de ações: quebra suave, melhor toque e leitura */
+      .action-bar{ flex-wrap: wrap; row-gap: 8px; }
+      .action-left{ flex-wrap: wrap; gap: 8px; }
+      .btn-icon{ width: 44px; height: 44px; } /* 44px = mínimo ideal para toque */
+      .counter{ width: 100%; justify-content: flex-start; font-size: .9rem; gap: 6px; }
+
+      /* Form de comentários: fluxo vertical quando faltar espaço */
+      .comment-inline{ flex-wrap: wrap; }
+      .comment-inline .comment-input{ min-height: 44px; }
+      .comment-inline .btn-send{ width: 100%; padding: 10px 14px; }
+
+      /* Container com padding simétrico para não “pender” */
+      .container, .container-fluid { padding-left: 12px; padding-right: 12px; }
+
+      /* Botão flutuante: um pouco mais afastado nas telas pequenas */
+      .floating-btn{ right: 20px; bottom: 24px; }
+    }
+
+    @media (min-width: 577px) and (max-width: 991.98px){
+      /* Tablets: permite quebra da barra de ações se necessário */
+      .action-bar{ flex-wrap: wrap; }
+      .ratio.ratio-16x9{ max-width: 720px; margin: 0 auto; }
+    }
   </style>
 </head>
 <body>
@@ -298,7 +307,7 @@
           </div>
         {% endif %}
 
-        {# Barra de ações - Melhorada (com os novos ajustes) #}
+        {# Barra de ações #}
         <div class="action-bar">
           <div class="action-left">
             <form method="post" action="{% url 'curtir_post' post.id %}" class="m-0 p-0">
@@ -342,7 +351,7 @@
           </div>
         </div>
 
-        {# Prévia dos 4 comentários - Melhorada #}
+        {# Prévia dos 4 comentários #}
         {% with total_coment=post.comentarios.all|length %}
           {% if total_coment %}
             <div class="comment-list">
@@ -426,7 +435,7 @@
           </div>
         </div>
 
-        {# Modal Curtidas – igual ao de comentários (lista em bubbles) #}
+        {# Modal Curtidas #}
         <div class="modal fade modal-elevated" id="curtidasModal{{ post.id }}" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
@@ -455,7 +464,6 @@
                           <span class="time">{{ curtida.data|timesince }} atrás</span>
                         {% endif %}
                       </div>
-                      {# Removido: <div class="mt-1 text-muted">Curtiu esta publicação</div> #}
                     </div>
                   </div>
                 {% empty %}
@@ -533,7 +541,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Mostrar/ocultar botão flutuante
+  // Mostrar/ocultar botão flutuante (desktop e mobile)
   const floatBtn = document.getElementById('floatingBtn');
   window.addEventListener('scroll', () => {
     floatBtn.style.display = window.scrollY > 150 ? 'flex' : 'none';

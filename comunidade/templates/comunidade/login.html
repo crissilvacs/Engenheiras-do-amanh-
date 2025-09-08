@@ -7,8 +7,10 @@
     <meta charset="UTF-8">
     <title>Login - Engenheiras do Amanhã</title>
 
+    <!-- ESSENCIAL PARA RESPONSIVIDADE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <!-- Bootstrap CSS -->
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- ESSENCIAL PARA RESPONSIVIDADE -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,10 +18,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
+        html, body { max-width: 100%; overflow-x: hidden; }
         body {
             background-color: #f1f2f6;
+            padding-top: 70px; /* espaço por causa da navbar fixa */
         }
-        
+
         .brand-logo { 
             width: auto; 
             height: 50px; 
@@ -35,7 +39,7 @@
         }
 
         .form-container {
-            margin-top: 60px;
+            margin-top: 40px;
             max-width: 400px;
             width: 100%;
             padding: 30px;
@@ -50,29 +54,21 @@
             border-radius: 20px;
             border: none;
         }
-        .btn-purple:hover {
-            background-color: #36005c;
-        }
+        .btn-purple:hover { background-color: #36005c; }
         .btn-google {
             background-color: #DB4437;
             color: white;
             border-radius: 20px;
         }
-        .btn-google:hover {
-            background-color: #c33d2e;
-        }
-        .forgot-link {
-            font-size: 13px;
-        }
+        .btn-google:hover { background-color: #c33d2e; }
+
+        .forgot-link { font-size: 13px; }
         .forgot-link a {
             color: #4B0082;
             text-decoration: none;
             font-weight: 500;
         }
-        .invalid-feedback {
-            display: block;
-            text-align: center;
-        }
+
         .captcha-wrapper {
             display: flex;
             flex-wrap: wrap;
@@ -85,6 +81,7 @@
             width: 150px;
             text-align: center;
         }
+
         .divider {
             display: flex;
             align-items: center;
@@ -98,6 +95,7 @@
             flex: 1;
             border-bottom: 1px solid #ddd;
         }
+
         .register-link {
             text-align: center;
             margin-top: 15px;
@@ -108,38 +106,22 @@
             font-weight: 500;
             text-decoration: none;
         }
-        .register-link a:hover {
-            text-decoration: underline;
-        }
+        .register-link a:hover { text-decoration: underline; }
 
-        /* Responsividade extra */
+        /* Responsividade */
         @media (max-width: 768px) {
-            .navbar-brand-text {
-                font-size: 18px;
-                margin-left: 5px;
-            }
-            .brand-logo {
-                height: 40px;
-            }
-            .form-container {
-                margin: 40px 15px;
-                padding: 20px;
-            }
+            .navbar-brand-text { font-size: 18px; margin-left: 5px; }
+            .brand-logo { height: 40px; }
+            .form-container { margin: 40px 15px; padding: 20px; }
         }
 
         @media (max-width: 500px) {
-            .navbar-brand-text {
-                font-size: 16px;
-                text-align: center;
-            }
-            .container-fluid > .d-flex {
-                flex-direction: column;
-                align-items: center;
-                gap: 5px;
-                text-align: center;
-            }
-            .captcha-wrapper {
-                flex-direction: column;
+            .navbar-brand-text { font-size: 16px; }
+            .captcha-wrapper { flex-direction: column; }
+            .form-container button, 
+            .form-container input[type="text"], 
+            .form-container input[type="password"] {
+                min-height: 44px;
             }
         }
     </style>
@@ -147,15 +129,15 @@
 
 <body>
 
-    <!-- Cabeçalho -->
-    <nav class="navbar bg-light shadow-sm">
-        <div class="container-fluid d-flex align-items-center flex-wrap">
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
-                <span class="navbar-brand fw-bold text-uppercase text-dark mb-0 navbar-brand-text">
-                    Ciência e Tecnologia para Mulheres
+    <!-- Navbar fixa com logo + nome -->
+    <nav class="navbar bg-white shadow-sm px-3 fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'pagina_inicial' %}">
+                <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo me-2">
+                <span class="navbar-brand-text">
+                    <span class="d-none d-sm-inline">Ciência e Tecnologia para Mulheres</span>
                 </span>
-            </div>
+            </a>
         </div>
     </nav>
 
@@ -225,9 +207,10 @@
             <div class="register-link">
                 Não tem uma conta? <a href="{% url 'registro' %}">Registe-se</a>
             </div>
-            
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
     // Script para atualizar o captcha

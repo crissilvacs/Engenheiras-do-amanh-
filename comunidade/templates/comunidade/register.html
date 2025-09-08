@@ -7,42 +7,28 @@
     <meta charset="UTF-8">
     <title>Registro - Engenheiras do Amanhã</title>
 
+    <!-- Essencial para responsividade -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap & Ícones -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
+        /* Evita scroll horizontal no mobile */
+        html, body { max-width: 100%; overflow-x: hidden; }
+
         body {
             background-color: #f1f2f6;
             font-family: Arial, sans-serif;
+            padding-top: 70px; /* espaço por causa da navbar fixa */
         }
 
-        .brand-logo { width: auto; height: 50px; object-fit: contain; display: block;}
+        .brand-logo { width: auto; height: 50px; object-fit: contain; display: block; }
 
-        .circle {
-            width: 60px;
-            height: 60px;
-            background-color: #4B0082;
-            border-radius: 50%;
-            margin-right: 20px;
-        }
-        .btn-purple {
-            background-color: #4B0082;
-            color: white;
-            border-radius: 20px;
-            border: none;
-        }
-        .btn-purple:hover {
-            background-color: #36005c;
-        }
-        .btn-google {
-            background-color: #DB4437;
-            color: white;
-            border-radius: 20px;
-        }
-        .btn-google:hover {
-            background-color: #c33d2e;
-        }
+        .navbar-brand-text { color: #4B0082; font-weight: bold; font-size: 22px; margin-left: 10px; }
+
         .form-box {
             background-color: white;
             padding: 40px;
@@ -51,70 +37,71 @@
             max-width: 420px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        input.form-control {
-            border-radius: 20px;
-            background-color: #f5f5f5;
-        }
+
+        input.form-control { border-radius: 20px; background-color: #f5f5f5; }
+
+        .btn-purple { background-color: #4B0082; color: white; border-radius: 20px; border: none; }
+        .btn-purple:hover { background-color: #36005c; }
+
+        .btn-google { background-color: #DB4437; color: white; border-radius: 20px; }
+        .btn-google:hover { background-color: #c33d2e; }
+
         .captcha-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 15px;
+            display: flex; justify-content: center; align-items: center;
+            gap: 10px; margin-top: 15px; flex-wrap: wrap;
         }
-        .captcha-wrapper img {
-            border-radius: 5px;
-        }
-        .captcha-wrapper input[type="text"] {
-            width: 150px;
-            text-align: center;
-        }
+        .captcha-wrapper img { border-radius: 5px; }
+        .captcha-wrapper input[type="text"] { width: 150px; text-align: center; }
+
         .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: #aaa;
-            margin: 20px 0;
+            display: flex; align-items: center; text-align: center;
+            color: #aaa; margin: 20px 0;
         }
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #ddd;
+        .divider::before, .divider::after {
+            content: ''; flex: 1; border-bottom: 1px solid #ddd;
         }
-        .divider:not(:empty)::before {
-            margin-right: .25em;
+        .divider:not(:empty)::before { margin-right: .25em; }
+        .divider:not(:empty)::after { margin-left: .25em; }
+
+        .login-link { text-align: center; margin-top: 15px; font-size: 0.9rem; }
+        .login-link a { color: #4B0082; font-weight: 500; text-decoration: none; }
+        .login-link a:hover { text-decoration: underline; }
+
+        /* ================= Responsividade ================= */
+        @media (max-width: 992px) {
+            .container, .container-fluid { padding-left: 16px; padding-right: 16px; }
         }
-        .divider:not(:empty)::after {
-            margin-left: .25em;
+        @media (max-width: 768px) {
+            .navbar-brand-text { font-size: 18px; margin-left: 5px; }
+            .brand-logo { height: 40px; }
+            main.py-5 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+            .form-box { padding: 28px; }
         }
-        .login-link {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-        .login-link a {
-            color: #4B0082;
-            font-weight: 500;
-            text-decoration: none;
-        }
-        .login-link a:hover {
-            text-decoration: underline;
+        @media (max-width: 500px) {
+            .navbar-brand-text { font-size: 16px; }
+            .form-box { margin: 0 12px; padding: 22px; }
+            .form-box button, .form-box input { min-height: 44px; } /* área de toque confortável */
         }
     </style>
 </head>
 <body>
 
-    <header class="d-flex justify-content-between align-items-center px-4 py-3 bg-light shadow-sm">
-    <div class="d-flex align-items-center gap-2">
-        <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo">
-        <span class="navbar-brand fw-bold text-uppercase text-dark mb-0">Ciência e Tecnologia para Mulheres</span>
+    <!-- Navbar fixa com logo + nome, igual às outras -->
+    <nav class="navbar bg-white shadow-sm px-3 fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'pagina_inicial' %}">
+                <img src="{% static 'comunidade/img/logo1.png' %}" alt="STEMA" class="brand-logo me-2">
+                <span class="navbar-brand-text">
+                    <span class="d-none d-sm-inline">Ciência e Tecnologia para Mulheres</span>
+                </span>
+            </a>
         </div>
-    </header>
+    </nav>
 
     <main class="d-flex justify-content-center align-items-center py-5">
         <div class="form-box" id="register-container" data-show-success-modal="{% if show_success_modal %}true{% else %}false{% endif %}">
             <p class="text-center fw-bold mb-4">Junte-se à comunidade!</p>
+
             <form method="post">
                 {% csrf_token %}
 
@@ -129,7 +116,7 @@
                         {% endfor %}
                     </div>
                 {% endif %}
-                
+
                 <div class="mb-3">
                     {{ form.nome.label_tag }}
                     {{ form.nome }}
@@ -146,7 +133,7 @@
                     {{ form.telefone.label_tag }}
                     {{ form.telefone }}
                 </div>
-                
+
                 <div class="captcha-wrapper">
                     {{ form.captcha }}
                     <button type="button" id="refresh-captcha-register" class="btn btn-light border" title="Atualizar Captcha">
@@ -158,7 +145,7 @@
                     <button type="submit" class="btn btn-purple w-100">Registre-se</button>
                 </div>
             </form>
-            
+
             <div class="divider">OU</div>
 
             <div class="d-grid gap-2">
@@ -170,10 +157,10 @@
             <div class="login-link">
                 Já tem uma conta? <a href="{% url 'login' %}">Faça o login</a>
             </div>
-
         </div>
     </main>
 
+    <!-- Modal de sucesso (quando aplicável) -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -191,24 +178,25 @@
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Verifique se o modal de sucesso deve ser exibido usando o data attribute
+            // Exibir modal de sucesso se indicado pelo data-atributo
             const registerContainer = document.getElementById('register-container');
             if (registerContainer.dataset.showSuccessModal === 'true') {
                 var myModal = new bootstrap.Modal(document.getElementById('successModal'));
                 myModal.show();
             }
 
-            // Script para atualizar o captcha
+            // Atualizar captcha
             const refreshButton = document.getElementById('refresh-captcha-register');
             if (refreshButton) {
                 refreshButton.addEventListener('click', function() {
                     const captchaImage = document.querySelector('.captcha');
                     const captchaHiddenInput = document.querySelector('input[name="captcha_0"]');
-                    
+
                     fetch('/captcha/refresh/', {
                         method: 'GET',
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
